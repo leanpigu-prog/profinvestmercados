@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Herramienta Profesional de Investigación de Mercados — Participación de Mercado</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --ink: #0b0c0f;
+      --carbon: #151924;
+      --storm: #1f2433;
+      --fog: #e6e6e6;
+      --accent: #f25c54;
+      --accent2: #ffd166;
+      --mint: #5bd6c9;
+      --udes: #f25c54;
+      --other: rgba(91,214,201,0.7);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #1f1b2d 0%, #0b0c0f 40%);
+      color: var(--fog);
+      min-height: 100vh;
+    }
+    header {
+      padding: 24px 40px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 20px; font-weight: 600; }
+    header p { font-size: 13px; color: rgba(230,230,230,0.5); margin-top: 2px; }
+    .logo-badge {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 16px 40px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .tab-btn {
+      padding: 10px 22px;
+      border: none;
+      background: transparent;
+      color: rgba(230,230,230,0.5);
+      font-size: 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--fog);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+    .tab-panel { display: none !important; }
+    .tab-panel.active { display: flex !important; }
+    /* Layout */
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 110px);
+    }
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      background: rgba(21,25,36,0.8);
+      border-right: 1px solid rgba(255,255,255,0.07);
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+    .sidebar h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(230,230,230,0.4);
+      margin-bottom: 16px;
+    }
+    .filter-group { margin-bottom: 20px; }
+    .filter-group label {
+      display: block;
+      font-size: 12px;
+      color: rgba(230,230,230,0.6);
+      margin-bottom: 6px;
+    }
+    .filter-group select, .filter-group input {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: var(--fog);
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .filter-group select option { background: #1f2433; }
+    .btn-reset {
+      width: 100%;
+      padding: 10px;
+      background: rgba(242,92,84,0.15);
+      border: 1px solid rgba(242,92,84,0.3);
+      color: var(--accent);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .btn-reset:hover { background: rgba(242,92,84,0.25); }
+    /* Main content */
+    .main-content {
+      flex: 1;
+      padding: 24px 32px;
+      overflow-y: auto;
+    }
+    /* KPI cards */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .kpi {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .kpi .label { font-size: 11px; color: rgba(230,230,230,0.5); text-transform: uppercase; letter-spacing: 1px; }
+    .kpi .value { font-size: 28px; font-weight: 700; margin: 4px 0 2px; }
+    .kpi .sub { font-size: 12px; color: rgba(230,230,230,0.5); }
+    .kpi.highlight { border-color: rgba(242,92,84,0.4); background: rgba(242,92,84,0.07); }
+    /* Chart panels */
+    .chart-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1100px) { .chart-row { grid-template-columns: 1fr; } }
+    .panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .panel h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(230,230,230,0.7);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .panel.full { grid-column: 1 / -1; }
+    canvas { max-height: 300px; }
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(230,230,230,0.4);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      cursor: pointer;
+    }
+    thead th:hover { color: var(--fog); }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 9px 12px; }
+    .badge-udes {
+      background: rgba(242,92,84,0.2);
+      color: var(--accent);
+      border: 1px solid rgba(242,92,84,0.4);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    /* Tab 2 styles */
+    .search-box {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: var(--fog);
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .search-box::placeholder { color: rgba(230,230,230,0.3); }
+    .search-hint { font-size: 12px; color: rgba(230,230,230,0.4); margin-bottom: 20px; }
+    .resumen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .resumen-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .resumen-card .r-label { font-size: 11px; color: rgba(230,230,230,0.45); text-transform: uppercase; letter-spacing: 1px; }
+    .resumen-card .r-value { font-size: 22px; font-weight: 700; margin: 4px 0; }
+    .resumen-card .r-sub { font-size: 12px; color: rgba(230,230,230,0.5); }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(230,230,230,0.3);
+    }
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+    .status-bar {
+      padding: 12px 40px;
+      font-size: 12px;
+      color: rgba(230,230,230,0.3);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    /* Multi-selects */
+    select[multiple] {
+      height: 110px;
+      padding: 4px 0;
+    }
+    select[multiple] option { padding: 5px 8px; white-space: nowrap; }
+    .filter-hint { font-size: 11px; color: rgba(230,230,230,0.35); margin-top: 4px; }
+    .filter-search {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      color: var(--fog);
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .filter-search + select[multiple] { border-radius: 0 0 6px 6px; height: 140px; }
+    .sidebar { width: 280px; min-width: 280px; }
+    /* Panel niveles */
+    .tabla-niveles td, .tabla-niveles th { padding: 10px 14px; }
+    .tabla-niveles tbody tr { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nivel-icon { font-size: 16px; margin-right: 6px; }
+    .pct-badge {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+    .pct-nacional { background: rgba(242,92,84,0.15); color: var(--accent); }
+    .pct-depto    { background: rgba(255,209,102,0.15); color: var(--accent2); }
+    .pct-mun      { background: rgba(91,214,201,0.15); color: var(--mint); }
+    /* FEATURE 3: Export button */
+    .btn-export {
+      background: transparent;
+      border: 1px solid var(--accent2);
+      color: var(--accent2);
+      border-radius: 4px;
+      padding: 3px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      float: right;
+    }
+    .btn-export:hover { background: var(--accent2); color: #fff; }
+    /* Tab 3 brecha styles */
+    .brecha-section { margin-bottom: 32px; }
+    .brecha-section h4 { margin-bottom: 12px; }
+    .thead-accent2 th { color: var(--accent2) !important; border-bottom-color: rgba(255,209,102,0.3) !important; }
+    .thead-accent th { color: var(--accent) !important; border-bottom-color: rgba(242,92,84,0.3) !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Herramienta Profesional de Investigación de Mercados</h1>
+    <p>Participación de Mercado · Fuente: SNIES · Datos: 2019–2024 · Actualización: semestral</p>
+  </div>
+  <span class="logo-badge">UDES</span>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('tab1')">📊 Participación de Mercado</button>
+  <button class="tab-btn" onclick="switchTab('tab2')">🔍 Análisis de Nuevo Programa</button>
+  <button class="tab-btn" onclick="switchTab('tab3')">🔍 Brecha de mercado</button>
+</div>
+
+<!-- TAB 1: Participación -->
+<div id="tab1" class="tab-panel active layout">
+  <aside class="sidebar">
+    <h3>Filtros</h3>
+    <div class="filter-group">
+      <label>Año</label>
+      <select id="f-anio" multiple size="4" onchange="applyFiltersTab1()">
+      </select>
+      <p class="filter-hint">Ctrl+clic para varios años</p>
+    </div>
+    <div class="filter-group">
+      <label>Semestre</label>
+      <select id="f-semestre" onchange="applyFiltersTab1()">
+        <option value="">Ambos</option>
+        <option value="1">1° semestre</option>
+        <option value="2">2° semestre</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Departamento</label>
+      <select id="f-depto" onchange="updateMunicipioOptions();applyFiltersTab1()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Municipio</label>
+      <select id="f-municipio" onchange="applyFiltersTab1()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Área de conocimiento</label>
+      <select id="f-area" onchange="applyFiltersTab1()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Nivel de formación</label>
+      <select id="f-nivel" onchange="applyFiltersTab1()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Metodología</label>
+      <select id="f-metodologia" onchange="applyFiltersTab1()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Programas UDES <span style="font-size:10px;color:var(--accent);font-weight:600">acceso rápido</span></label>
+      <select id="f-programa-udes" onchange="syncUdesPrograma()">
+        <option value="">— Selecciona un programa UDES —</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Programa académico <span style="font-size:10px;opacity:.6">(todos los del mercado)</span></label>
+      <input type="text" class="filter-search" id="f-programa-buscar"
+        placeholder="Buscar programa..." oninput="filterProgramOptions()">
+      <select id="f-programa" multiple onchange="applyFiltersTab1()">
+      </select>
+      <p class="filter-hint">Ctrl+clic para varios · Escribe para buscar</p>
+    </div>
+    <div class="filter-group">
+      <label>Campus UDES</label>
+      <select id="f-campus" onchange="applyFiltersTab1()">
+        <option value="">Todos los campus</option>
+        <option value="BUCARAMANGA">Bucaramanga</option>
+        <option value="VALLEDUPAR">Valledupar</option>
+        <option value="CUCUTA">Cúcuta</option>
+        <option value="BOGOTA">Bogotá</option>
+      </select>
+    </div>
+    <button class="btn-reset" onclick="resetFilters()">↺ Limpiar filtros</button>
+  </aside>
+  <main class="main-content">
+    <div class="kpi-row">
+      <div class="kpi highlight">
+        <div class="label">Matriculados UDES</div>
+        <div class="value" id="kpi-udes">—</div>
+        <div class="sub" id="kpi-udes-sub">selecciona filtros</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Total mercado</div>
+        <div class="value" id="kpi-total">—</div>
+        <div class="sub" id="kpi-total-sub">suma del segmento</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Participación UDES</div>
+        <div class="value" id="kpi-part">—</div>
+        <div class="sub" id="kpi-part-sub">% del mercado</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Competidores</div>
+        <div class="value" id="kpi-ies">—</div>
+        <div class="sub">IES en el segmento</div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="panel full" id="panel-niveles">
+        <h4>Participación por nivel geográfico</h4>
+        <div id="niveles-content" style="color:rgba(230,230,230,0.3);text-align:center;padding:20px">
+          Carga datos para ver la participación multi-nivel
+        </div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="panel">
+        <h4>Top IES por matriculados</h4>
+        <canvas id="chart-top-ies"></canvas>
+      </div>
+      <div class="panel">
+        <h4>Evolución UDES vs mercado</h4>
+        <canvas id="chart-evolucion"></canvas>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="panel full">
+        <h4>Ranking por programa (UDES) <button class="btn-export" onclick="exportarCSV('tabla-programas','ranking_programas.csv')">⬇ Exportar CSV</button></h4>
+        <table id="tabla-programas">
+          <thead><tr>
+            <th>Programa</th>
+            <th onclick="sortTabla(this,1)">Matriculados UDES ↕</th>
+            <th onclick="sortTabla(this,2)">Total mercado ↕</th>
+            <th onclick="sortTabla(this,3)">Participación % ↕</th>
+          </tr></thead>
+          <tbody id="tbody-programas"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TAB 2: Nuevo Programa -->
+<div id="tab2" class="tab-panel layout">
+  <aside class="sidebar">
+    <h3>Filtros (2024)</h3>
+    <div class="filter-group">
+      <label>Departamento</label>
+      <select id="f2-depto" onchange="applyFiltersTab2()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Nivel de formación</label>
+      <select id="f2-nivel" onchange="applyFiltersTab2()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Metodología</label>
+      <select id="f2-metodologia" onchange="applyFiltersTab2()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>
+        <input type="checkbox" id="f2-acreditados" onchange="applyFiltersTab2()">
+        Solo programas acreditados
+      </label>
+    </div>
+    <button class="btn-reset" onclick="resetFilters2()">↺ Limpiar filtros</button>
+  </aside>
+  <main class="main-content">
+    <input type="text" class="search-box" id="buscador-programa"
+      placeholder="Escribe un programa (ej: Ingeniería de Sistemas, Derecho, Medicina...)"
+      oninput="applyFiltersTab2()">
+    <p class="search-hint">Buscando en datos de 2024 · Escribe mínimo 3 caracteres</p>
+    <div id="resumen-nuevo" style="display:none">
+      <div class="resumen-grid" id="resumen-cards"></div>
+    </div>
+    <div id="tabla-comparacion-wrap">
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>Escribe el nombre de un programa para ver la competencia</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TAB 3: Brecha de mercado -->
+<div id="tab3" class="tab-panel layout">
+  <aside class="sidebar">
+    <h3>Filtros Brecha</h3>
+    <div class="filter-group">
+      <label>Año</label>
+      <select id="f3-anio" onchange="applyFiltersTab3()">
+        <option value="">Más reciente</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Territorio</label>
+      <select id="f3-territorio" onchange="applyFiltersTab3()">
+        <option value="region">Región UDES (Santander + N. Santander + Cesar)</option>
+        <option value="SANTANDER">Santander</option>
+        <option value="NORTE DE SANTANDER">Norte de Santander</option>
+        <option value="CESAR">Cesar</option>
+        <option value="nacional">Nacional</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Área de conocimiento</label>
+      <select id="f3-area" onchange="applyFiltersTab3()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Nivel de formación</label>
+      <select id="f3-nivel" onchange="applyFiltersTab3()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="f3-solo-privadas" onchange="applyFiltersTab3()" style="width:auto;accent-color:var(--accent2)">
+        <span>Excluir IES oficiales<br><span style="font-size:10px;opacity:.6">Solo competencia privada</span></span>
+      </label>
+    </div>
+    <button class="btn-reset" onclick="resetFilters3()">↺ Limpiar filtros</button>
+  </aside>
+  <main class="main-content">
+    <div class="brecha-section">
+      <div class="panel">
+        <h4 id="brecha-a-titulo" style="color:var(--accent2)">Oportunidades — Programas en la región sin UDES <button class="btn-export" onclick="exportarCSV('tabla-brecha-a','brecha_oportunidades.csv')">⬇ Exportar CSV</button></h4>
+        <p style="font-size:11px;color:rgba(230,230,230,0.4);margin:-8px 0 12px">Programas ofrecidos en el territorio seleccionado donde UDES no tiene presencia</p>
+        <div id="brecha-a-content">
+          <div class="empty-state"><div class="icon">📊</div><p>Carga datos para ver el análisis de brecha</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="brecha-section">
+      <div class="panel">
+        <h4 id="brecha-b-titulo" style="color:var(--accent)">A reforzar — UDES con baja participación en sus sedes (&lt;15%) <button class="btn-export" onclick="exportarCSV('tabla-brecha-b','brecha_reforzar.csv')">⬇ Exportar CSV</button></h4>
+        <p style="font-size:11px;color:rgba(230,230,230,0.4);margin:-8px 0 12px">Mercado local en Bucaramanga, Cúcuta y Valledupar donde UDES compite por debajo del 15%</p>
+        <div id="brecha-b-content">
+          <div class="empty-state"><div class="icon">📉</div><p>Carga datos para ver el análisis de brecha</p></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="status-bar" id="status-bar">Cargando datos...</div>
+
+<script>
+// =====================================================
+// CONFIGURACION — pon aquí el nombre exacto de UDES
+// (lo viste al correr limpiar_datos.py)
+// =====================================================
+const NOMBRE_UDES = 'UNIVERSIDAD DE SANTANDER - UDES';
+
+// Departamento de cada campus UDES (valores ya normalizados — sin tildes, mayúsculas)
+const CAMPUS_DEPT = {
+  'BUCARAMANGA': 'SANTANDER',
+  'VALLEDUPAR':  'CESAR',
+  'CUCUTA':      'NORTE DE SANTANDER',
+  'BOGOTA':      'BOGOTA D.C.'
+};
+
+// =====================================================
+// Estado global
+// =====================================================
+let allData = [];
+let charts = {};
+let tablaSortDir = {};
+
+// =====================================================
+// Carga del CSV
+// =====================================================
+function loadCSV() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.csv';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    document.getElementById('status-bar').textContent = 'Cargando CSV...';
+    Papa.parse(file, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: results => {
+        allData = results.data;
+        document.getElementById('status-bar').textContent =
+          `✓ ${allData.length.toLocaleString('es-CO')} registros cargados · ${[...new Set(allData.map(r=>r.AÑO))].sort().join(', ')}`;
+        initFilters();
+        applyFiltersTab1();
+        applyFiltersTab2();
+        applyFiltersTab3();
+      },
+      error: err => {
+        document.getElementById('status-bar').textContent = 'Error al cargar: ' + err.message;
+      }
+    });
+  };
+  input.click();
+}
+
+// =====================================================
+// Inicializar selectores con valores únicos
+// =====================================================
+function initFilters() {
+  const sets = { años: new Set(), deptos: new Set(), municipios: new Set(), areas: new Set(), niveles: new Set(), mets: new Set(), programas: new Set() };
+  allData.forEach(r => {
+    if (r.AÑO) sets.años.add(r.AÑO);
+    if (r['DEPARTAMENTO DE OFERTA DEL PROGRAMA']) sets.deptos.add(r['DEPARTAMENTO DE OFERTA DEL PROGRAMA']);
+    if (r['MUNICIPIO DE OFERTA DEL PROGRAMA']) sets.municipios.add(r['MUNICIPIO DE OFERTA DEL PROGRAMA']);
+    if (r['ÁREA DE CONOCIMIENTO']) sets.areas.add(r['ÁREA DE CONOCIMIENTO']);
+    if (r['NIVEL DE FORMACIÓN']) sets.niveles.add(r['NIVEL DE FORMACIÓN']);
+    if (r['METODOLOGÍA']) sets.mets.add(r['METODOLOGÍA']);
+    if (r['GRUPO_ANALITICO']) sets.programas.add(r['GRUPO_ANALITICO']);
+  });
+
+  // Programas exclusivos de UDES
+  const programasUdes = [...new Set(
+    allData.filter(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES && r['GRUPO_ANALITICO'])
+           .map(r => r['GRUPO_ANALITICO'])
+  )].sort();
+
+  fillMultiSelect('f-anio', [...sets.años].sort());
+  fillSelect('f-depto', [...sets.deptos].sort(), 'Todos');
+  fillSelect('f-municipio', [...sets.municipios].sort(), 'Todos');
+  fillSelect('f-area', [...sets.areas].sort(), 'Todas');
+  fillSelect('f-nivel', [...sets.niveles].sort(), 'Todos');
+  fillSelect('f-metodologia', [...sets.mets].sort(), 'Todas');
+  fillSelect('f-programa-udes', programasUdes, '— Selecciona un programa UDES —');
+  fillMultiSelect('f-programa', [...sets.programas].sort());
+  fillSelect('f2-depto', [...sets.deptos].sort(), 'Todos');
+  fillSelect('f2-nivel', [...sets.niveles].sort(), 'Todos');
+  fillSelect('f2-metodologia', [...sets.mets].sort(), 'Todas');
+
+  // Tab 3 filters
+  fillSelect('f3-anio', [...sets.años].sort(), 'Más reciente');
+  fillSelect('f3-area', [...sets.areas].sort(), 'Todas');
+  fillSelect('f3-nivel', [...sets.niveles].sort(), 'Todos');
+}
+
+function fillSelect(id, values, placeholder) {
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = `<option value="">${placeholder}</option>`;
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    if (v == current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function fillMultiSelect(id, values) {
+  const sel = document.getElementById(id);
+  const prevSelected = new Set([...sel.selectedOptions].map(o => o.value));
+  sel.innerHTML = '';
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    if (prevSelected.has(v)) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function getSelectedProgramas() {
+  return [...document.getElementById('f-programa').selectedOptions].map(o => o.value);
+}
+
+function getSelectedAnios() {
+  return [...document.getElementById('f-anio').selectedOptions].map(o => Number(o.value));
+}
+
+function updateMunicipioOptions() {
+  const depto = document.getElementById('f-depto').value;
+  const municipios = depto
+    ? [...new Set(allData.filter(r => r['DEPARTAMENTO DE OFERTA DEL PROGRAMA'] === depto).map(r => r['MUNICIPIO DE OFERTA DEL PROGRAMA']))].filter(Boolean).sort()
+    : [...new Set(allData.map(r => r['MUNICIPIO DE OFERTA DEL PROGRAMA']))].filter(Boolean).sort();
+  fillSelect('f-municipio', municipios, 'Todos');
+}
+
+function filterProgramOptions() {
+  const q = document.getElementById('f-programa-buscar').value.toUpperCase();
+  [...document.getElementById('f-programa').options].forEach(o => {
+    o.style.display = (!q || o.value.toUpperCase().includes(q)) ? '' : 'none';
+  });
+}
+
+function syncUdesPrograma() {
+  const val = document.getElementById('f-programa-udes').value;
+  const sel = document.getElementById('f-programa');
+  // Deseleccionar todo, luego seleccionar el programa elegido
+  [...sel.options].forEach(o => { o.selected = (val && o.value === val); });
+  // Mostrar el programa en el buscador para orientar al usuario
+  const buscar = document.getElementById('f-programa-buscar');
+  buscar.value = val ? val.slice(0, 30) : '';
+  filterProgramOptions();
+  applyFiltersTab1();
+}
+
+// =====================================================
+// Tab switching
+// =====================================================
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  const tabIndex = { 'tab1': 0, 'tab2': 1, 'tab3': 2 };
+  const idx = tabIndex[tabId];
+  if (idx !== undefined) {
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  }
+}
+
+// =====================================================
+// TAB 1 — Participación de Mercado
+// =====================================================
+function getFilteredData() {
+  const anios = getSelectedAnios();
+  const sem = document.getElementById('f-semestre').value;
+  const depto = document.getElementById('f-depto').value;
+  const municipio = document.getElementById('f-municipio').value;
+  const area = document.getElementById('f-area').value;
+  const nivel = document.getElementById('f-nivel').value;
+  const met = document.getElementById('f-metodologia').value;
+  const programas = getSelectedProgramas();
+  const campus = document.getElementById('f-campus').value;
+
+  return allData.filter(r => {
+    const esUdes = r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES;
+    if (campus && esUdes && r['MUNICIPIO DE OFERTA DEL PROGRAMA'] !== campus) return false;
+    return (
+      (!anios.length || anios.includes(r.AÑO)) &&
+      (!sem || r.SEMESTRE == sem) &&
+      (!depto || r['DEPARTAMENTO DE OFERTA DEL PROGRAMA'] === depto) &&
+      (!municipio || r['MUNICIPIO DE OFERTA DEL PROGRAMA'] === municipio) &&
+      (!area || r['ÁREA DE CONOCIMIENTO'] === area) &&
+      (!nivel || r['NIVEL DE FORMACIÓN'] === nivel) &&
+      (!met || r['METODOLOGÍA'] === met) &&
+      (!programas.length || programas.includes(r['GRUPO_ANALITICO']))
+    );
+  });
+}
+
+function applyFiltersTab1() {
+  if (!allData.length) return;
+  const data = getFilteredData();
+
+  // Leer filtros no-temporales para calcular año anterior
+  const sem = document.getElementById('f-semestre').value;
+  const depto = document.getElementById('f-depto').value;
+  const municipio = document.getElementById('f-municipio').value;
+  const area = document.getElementById('f-area').value;
+  const nivel = document.getElementById('f-nivel').value;
+  const met = document.getElementById('f-metodologia').value;
+  const programas = getSelectedProgramas();
+  const campus = document.getElementById('f-campus').value;
+
+  // KPIs
+  const totalMercado = data.reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+  const dataUdes = data.filter(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES);
+  const totalUdes = dataUdes.reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+  const part = totalMercado > 0 ? ((totalUdes / totalMercado) * 100).toFixed(1) : 0;
+  const nIes = new Set(data.map(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'])).size;
+
+  document.getElementById('kpi-udes').textContent = totalUdes.toLocaleString('es-CO');
+  document.getElementById('kpi-total').textContent = totalMercado.toLocaleString('es-CO');
+  document.getElementById('kpi-part').textContent = part + '%';
+  document.getElementById('kpi-ies').textContent = nIes;
+
+  // FEATURE 1: Variación interanual
+  const anios = getSelectedAnios();
+  const anioActual = anios.length ? Math.max(...anios) : allData.reduce((m,r) => r.AÑO > m ? r.AÑO : m, 0);
+  const anioPrev = anioActual - 1;
+
+  const dataPrev = allData.filter(r => {
+    const esUdes = r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES;
+    if (campus && esUdes && r['MUNICIPIO DE OFERTA DEL PROGRAMA'] !== campus) return false;
+    return r.AÑO == anioPrev &&
+      (!sem || r.SEMESTRE == sem) &&
+      (!depto || r['DEPARTAMENTO DE OFERTA DEL PROGRAMA'] === depto) &&
+      (!municipio || r['MUNICIPIO DE OFERTA DEL PROGRAMA'] === municipio) &&
+      (!area || r['ÁREA DE CONOCIMIENTO'] === area) &&
+      (!nivel || r['NIVEL DE FORMACIÓN'] === nivel) &&
+      (!met || r['METODOLOGÍA'] === met) &&
+      (!programas.length || programas.includes(r['GRUPO_ANALITICO']));
+  });
+
+  const totalUdesPrev = dataPrev.filter(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES)
+    .reduce((s,r) => s + (r.MATRICULADOS||0), 0);
+  const totalMercadoPrev = dataPrev.reduce((s,r) => s + (r.MATRICULADOS||0), 0);
+  const partPrev = totalMercadoPrev > 0 ? (totalUdesPrev / totalMercadoPrev * 100) : null;
+
+  function fmtVar(curr, prev, ispp) {
+    if (ispp === undefined) ispp = false;
+    if (!prev || prev === 0) return '— sin año anterior';
+    const delta = ispp ? (curr - prev) : ((curr - prev) / prev * 100);
+    const sign = delta >= 0 ? '▲' : '▼';
+    const color = delta >= 0 ? 'var(--mint)' : 'var(--accent)';
+    let val;
+    if (ispp) {
+      val = (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' pp';
+    } else {
+      val = (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%';
+    }
+    return `<span style="color:${color};font-size:11px;font-weight:600">${sign} ${val} vs ${anioPrev}</span>`;
+  }
+
+  document.getElementById('kpi-udes-sub').innerHTML = fmtVar(totalUdes, totalUdesPrev);
+  document.getElementById('kpi-total-sub').innerHTML = fmtVar(totalMercado, totalMercadoPrev);
+  document.getElementById('kpi-part-sub').innerHTML = fmtVar(parseFloat(part), partPrev, true);
+
+  renderNivelesParticipacion(totalUdes);
+  renderTopIES(data);
+  renderEvolucion(data);
+  renderTablaProgramas(data);
+}
+
+function renderNivelesParticipacion(totalUdes) {
+  const anios    = getSelectedAnios();
+  const sem      = document.getElementById('f-semestre').value;
+  const area     = document.getElementById('f-area').value;
+  const nivel    = document.getElementById('f-nivel').value;
+  const met      = document.getElementById('f-metodologia').value;
+  const campus   = document.getElementById('f-campus').value;
+  const depto    = document.getElementById('f-depto').value;
+  const municipio = document.getElementById('f-municipio').value;
+  const programas = getSelectedProgramas();
+
+  // Filtro base: solo atributos no-geográficos (para calcular mercado en cada nivel)
+  const baseOk = r =>
+    (!anios.length || anios.includes(r.AÑO)) &&
+    (!sem   || r.SEMESTRE == sem) &&
+    (!area  || r['ÁREA DE CONOCIMIENTO'] === area) &&
+    (!nivel || r['NIVEL DE FORMACIÓN'] === nivel) &&
+    (!met   || r['METODOLOGÍA'] === met) &&
+    (!programas.length || programas.includes(r['GRUPO_ANALITICO']));
+
+  // Ranking de IES dentro de un conjunto de datos
+  const rankIES = data => {
+    const map = {};
+    data.forEach(r => {
+      const k = r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] || '?';
+      map[k] = (map[k] || 0) + (r.MATRICULADOS || 0);
+    });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]);
+  };
+
+  const fmt  = n => n.toLocaleString('es-CO');
+  const pct  = (u, t) => t > 0 ? ((u / t) * 100).toFixed(2) + '%' : 'N/D';
+  const pos  = (rank, n) => rank > 0 ? `#${rank} de ${n} IES` : '—';
+  const udesRank = (ranking) => {
+    const idx = ranking.findIndex(([k]) => k === NOMBRE_UDES);
+    return idx >= 0 ? idx + 1 : 0;
+  };
+
+  // ── Nivel Nacional ──────────────────────────────────────
+  const nacional = allData.filter(baseOk);
+  const totalNac = nacional.reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+  const rankNac  = rankIES(nacional);
+  const posNac   = udesRank(rankNac);
+
+  // ── Nivel Departamental ─────────────────────────────────
+  const deptKey = campus ? CAMPUS_DEPT[campus] : depto;
+  let rowDepto  = null;
+  if (deptKey) {
+    const deptoData = allData.filter(r => baseOk(r) && r['DEPARTAMENTO DE OFERTA DEL PROGRAMA'] === deptKey);
+    const totalDept  = deptoData.reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+    const rankDept   = rankIES(deptoData);
+    rowDepto = { label: deptKey, total: totalDept, pos: udesRank(rankDept), nIes: rankDept.length };
+  }
+
+  // ── Nivel Municipal (campus o filtro municipio) ──────────
+  const munKey = municipio || campus;
+  let rowMun = null;
+  if (munKey) {
+    const munData   = allData.filter(r => baseOk(r) && r['MUNICIPIO DE OFERTA DEL PROGRAMA'] === munKey);
+    const totalMun  = munData.reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+    const rankMun   = rankIES(munData);
+    rowMun = { label: munKey, total: totalMun, pos: udesRank(rankMun), nIes: rankMun.length };
+  }
+
+  // ── Render tabla ────────────────────────────────────────
+  let tbody = `
+    <tr>
+      <td><span class="nivel-icon">🇨🇴</span>Nacional</td>
+      <td>Colombia</td>
+      <td>${fmt(totalUdes)}</td>
+      <td>${fmt(totalNac)}</td>
+      <td><span class="pct-badge pct-nacional">${pct(totalUdes, totalNac)}</span></td>
+      <td style="color:rgba(230,230,230,0.55);font-size:12px">${pos(posNac, rankNac.length)}</td>
+    </tr>`;
+
+  if (rowDepto) {
+    tbody += `
+    <tr>
+      <td><span class="nivel-icon">🗺</span>Departamental</td>
+      <td>${rowDepto.label}</td>
+      <td>${fmt(totalUdes)}</td>
+      <td>${fmt(rowDepto.total)}</td>
+      <td><span class="pct-badge pct-depto">${pct(totalUdes, rowDepto.total)}</span></td>
+      <td style="color:rgba(230,230,230,0.55);font-size:12px">${pos(rowDepto.pos, rowDepto.nIes)}</td>
+    </tr>`;
+  }
+
+  if (rowMun) {
+    tbody += `
+    <tr>
+      <td><span class="nivel-icon">🏙</span>Municipal</td>
+      <td>${rowMun.label}</td>
+      <td>${fmt(totalUdes)}</td>
+      <td>${fmt(rowMun.total)}</td>
+      <td><span class="pct-badge pct-mun">${pct(totalUdes, rowMun.total)}</span></td>
+      <td style="color:rgba(230,230,230,0.55);font-size:12px">${pos(rowMun.pos, rowMun.nIes)}</td>
+    </tr>`;
+  }
+
+  document.getElementById('niveles-content').innerHTML = `
+    <table class="tabla-niveles">
+      <thead><tr>
+        <th>Nivel</th><th>Territorio</th>
+        <th>UDES Matr.</th><th>Total Mercado</th>
+        <th>Participación %</th><th>Posición UDES</th>
+      </tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>`;
+}
+
+function agg(data, key) {
+  const map = {};
+  data.forEach(r => {
+    const k = r[key] || '(Sin datos)';
+    map[k] = (map[k] || 0) + (r.MATRICULADOS || 0);
+  });
+  return Object.entries(map).sort((a, b) => b[1] - a[1]);
+}
+
+function renderTopIES(data) {
+  const entries = agg(data, 'INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)').slice(0, 12);
+  const labels = entries.map(([k]) => k.length > 35 ? k.slice(0, 33) + '...' : k);
+  const values = entries.map(([, v]) => v);
+  const colors = entries.map(([k]) =>
+    k === NOMBRE_UDES ? 'rgba(242,92,84,0.85)' : 'rgba(91,214,201,0.5)'
+  );
+
+  if (charts['top-ies']) charts['top-ies'].destroy();
+  charts['top-ies'] = new Chart(document.getElementById('chart-top-ies'), {
+    type: 'bar',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 4 }] },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#ddd', font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderEvolucion(data) {
+  const años = [...new Set(data.map(r => r.AÑO))].filter(Boolean).sort();
+  const byAnio = year => data.filter(r => r.AÑO == year).reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+  const byAnioUdes = year => data.filter(r => r.AÑO == year && r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES)
+    .reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+
+  if (charts['evolucion']) charts['evolucion'].destroy();
+  charts['evolucion'] = new Chart(document.getElementById('chart-evolucion'), {
+    type: 'line',
+    data: {
+      labels: años,
+      datasets: [
+        {
+          label: 'UDES',
+          data: años.map(byAnioUdes),
+          borderColor: 'rgba(242,92,84,1)',
+          backgroundColor: 'rgba(242,92,84,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5
+        },
+        {
+          label: 'Mercado total',
+          data: años.map(byAnio),
+          borderColor: 'rgba(91,214,201,0.7)',
+          backgroundColor: 'rgba(91,214,201,0.05)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: '#ccc', font: { size: 12 } } }
+      },
+      scales: {
+        x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: 'rgba(242,92,84,0.8)' }, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'UDES', color: 'rgba(242,92,84,0.7)' } },
+        y2: { position: 'right', ticks: { color: 'rgba(91,214,201,0.8)' }, grid: { display: false }, title: { display: true, text: 'Mercado', color: 'rgba(91,214,201,0.7)' } }
+      }
+    }
+  });
+}
+
+function renderTablaProgramas(data) {
+  const dataUdes = data.filter(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES);
+  const progUdes = {};
+  dataUdes.forEach(r => {
+    const p = r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO'] || '(Sin datos)';
+    progUdes[p] = (progUdes[p] || 0) + (r.MATRICULADOS || 0);
+  });
+  const progTotal = {};
+  data.forEach(r => {
+    const p = r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO'] || '(Sin datos)';
+    progTotal[p] = (progTotal[p] || 0) + (r.MATRICULADOS || 0);
+  });
+
+  const rows = Object.entries(progUdes)
+    .map(([prog, udesTotal]) => [prog, udesTotal, progTotal[prog] || 0])
+    .sort((a, b) => b[1] - a[1]);
+
+  const tbody = document.getElementById('tbody-programas');
+  const panel = document.getElementById('tabla-programas').closest('.panel');
+  const h4 = panel.querySelector('h4');
+  // Preserve the export button inside h4
+  const exportBtn = h4.querySelector('.btn-export');
+  const exportBtnHTML = exportBtn ? exportBtn.outerHTML : '';
+  h4.innerHTML = `Ranking por programa (UDES)${rows.length > 50 ? ' — Top 50 de ' + rows.length : ''} ${exportBtnHTML}`;
+  tbody.innerHTML = rows.slice(0, 50).map(([prog, udes, total]) => {
+    const p = total > 0 ? ((udes / total) * 100).toFixed(1) : '—';
+    return `<tr>
+      <td>${prog}</td>
+      <td>${udes.toLocaleString('es-CO')}</td>
+      <td>${total.toLocaleString('es-CO')}</td>
+      <td>${p}%</td>
+    </tr>`;
+  }).join('');
+}
+
+function sortTabla(th, colIdx) {
+  const tbody = document.getElementById('tbody-programas');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const dir = tablaSortDir[colIdx] === 'asc' ? 'desc' : 'asc';
+  tablaSortDir[colIdx] = dir;
+  rows.sort((a, b) => {
+    const av = parseFloat(a.cells[colIdx].textContent.replace(/[^0-9.]/g, '')) || 0;
+    const bv = parseFloat(b.cells[colIdx].textContent.replace(/[^0-9.]/g, '')) || 0;
+    return dir === 'asc' ? av - bv : bv - av;
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+function resetFilters() {
+  ['f-semestre','f-depto','f-municipio','f-area','f-nivel','f-metodologia','f-campus','f-programa-udes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  [...document.getElementById('f-anio').options].forEach(o => o.selected = false);
+  [...document.getElementById('f-programa').options].forEach(o => o.selected = false);
+  const buscar = document.getElementById('f-programa-buscar');
+  if (buscar) buscar.value = '';
+  applyFiltersTab1();
+}
+
+// =====================================================
+// TAB 2 — Análisis de Nuevo Programa
+// =====================================================
+function applyFiltersTab2() {
+  if (!allData.length) return;
+  const query = document.getElementById('buscador-programa').value.trim().toUpperCase();
+  if (query.length < 3) {
+    document.getElementById('tabla-comparacion-wrap').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>Escribe el nombre de un programa para ver la competencia</p>
+      </div>`;
+    document.getElementById('resumen-nuevo').style.display = 'none';
+    return;
+  }
+
+  const depto = document.getElementById('f2-depto').value;
+  const nivel = document.getElementById('f2-nivel').value;
+  const met = document.getElementById('f2-metodologia').value;
+  const soloAcreditados = document.getElementById('f2-acreditados').checked;
+
+  // Solo datos del último año disponible
+  const maxAnio = allData.reduce((m, r) => (r.AÑO && r.AÑO > m ? r.AÑO : m), 0);
+
+  const data = allData.filter(r =>
+    r.AÑO === maxAnio &&
+    (r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO']) &&
+    (r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO']).toUpperCase().includes(query) &&
+    (!depto || r['DEPARTAMENTO DE OFERTA DEL PROGRAMA'] === depto) &&
+    (!nivel || r['NIVEL DE FORMACIÓN'] === nivel) &&
+    (!met || r['METODOLOGÍA'] === met) &&
+    (!soloAcreditados || r['PROGRAMA ACREDITADO'] === 'ACREDITADO')
+  );
+
+  if (data.length === 0) {
+    document.getElementById('tabla-comparacion-wrap').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📭</div>
+        <p>No se encontraron resultados para "<strong>${query}</strong>" en ${maxAnio}</p>
+      </div>`;
+    document.getElementById('resumen-nuevo').style.display = 'none';
+    return;
+  }
+
+  // Agrupar por IES + programa (tomar el semestre con más matriculados)
+  const byKey = {};
+  data.forEach(r => {
+    const key = r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] + '|' + (r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO']);
+    if (!byKey[key] || r.MATRICULADOS > byKey[key].MATRICULADOS) {
+      byKey[key] = r;
+    }
+  });
+  const rows = Object.values(byKey).sort((a, b) => (b.MATRICULADOS || 0) - (a.MATRICULADOS || 0));
+
+  renderResumenNuevo(rows, maxAnio, query);
+  renderTablaComparacion(rows);
+}
+
+// FEATURE 4: HHI calculation
+function calcularHHI(rows) {
+  const total = rows.reduce((s,r) => s + (r.MATRICULADOS||0), 0);
+  if (total === 0) return 0;
+  return rows.reduce((s,r) => {
+    const share = (r.MATRICULADOS||0) / total;
+    return s + share * share * 10000;
+  }, 0);
+}
+
+function renderResumenNuevo(rows, anio, query) {
+  const nIes = new Set(rows.map(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'])).size;
+  const totalMat = rows.reduce((s, r) => s + (r.MATRICULADOS || 0), 0);
+  const totalPrimero = rows.reduce((s, r) => s + (r['MATRICULADOS PRIMER CURSO'] || 0), 0);
+  const costos = rows.map(r => r['COSTO MATRICULA'] || 0).filter(c => c > 0);
+  const costoMin = costos.length ? Math.min(...costos) : 0;
+  const costoMax = costos.length ? Math.max(...costos) : 0;
+  const costoAvg = costos.length ? costos.reduce((a, b) => a + b, 0) / costos.length : 0;
+  const fmt = n => n > 0 ? '$' + (n / 1000000).toFixed(1) + 'M' : 'N/D';
+
+  // FEATURE 4: HHI
+  const hhi = calcularHHI(rows);
+  const hhiVal = Math.round(hhi);
+  let hhiLabel, hhiColor;
+  if (hhi < 1500) {
+    hhiLabel = 'Competitivo';
+    hhiColor = 'var(--mint)';
+  } else if (hhi <= 2500) {
+    hhiLabel = 'Moderadamente concentrado';
+    hhiColor = '#f0b429';
+  } else {
+    hhiLabel = 'Altamente concentrado';
+    hhiColor = 'var(--accent)';
+  }
+
+  document.getElementById('resumen-cards').innerHTML = `
+    <div class="resumen-card">
+      <div class="r-label">IES que lo ofrecen</div>
+      <div class="r-value">${nIes}</div>
+      <div class="r-sub">en ${anio}</div>
+    </div>
+    <div class="resumen-card">
+      <div class="r-label">Demanda total</div>
+      <div class="r-value">${totalMat.toLocaleString('es-CO')}</div>
+      <div class="r-sub">matriculados ${anio}</div>
+    </div>
+    <div class="resumen-card">
+      <div class="r-label">Nuevos estudiantes</div>
+      <div class="r-value">${totalPrimero.toLocaleString('es-CO')}</div>
+      <div class="r-sub">primer curso ${anio}</div>
+    </div>
+    <div class="resumen-card">
+      <div class="r-label">Costo promedio</div>
+      <div class="r-value">${fmt(costoAvg)}</div>
+      <div class="r-sub">Rango: ${fmt(costoMin)} – ${fmt(costoMax)}</div>
+    </div>
+    <div class="resumen-card">
+      <div class="r-label">Concentración mercado (HHI)</div>
+      <div class="r-value" style="color:${hhiColor}">${hhiVal}</div>
+      <div class="r-sub" style="color:${hhiColor}">${hhiLabel}</div>
+    </div>
+  `;
+  document.getElementById('resumen-nuevo').style.display = 'block';
+}
+
+function renderTablaComparacion(rows) {
+  const html = `
+    <div class="panel">
+      <h4>Universidades que ofrecen el programa (${rows.length} resultados) <button class="btn-export" onclick="exportarCSV('tabla-comparacion','comparacion_programas.csv')">⬇ Exportar CSV</button></h4>
+      <div style="overflow-x:auto">
+      <table id="tabla-comparacion">
+        <thead><tr>
+          <th>IES</th>
+          <th>Depto / Ciudad</th>
+          <th>Metodología</th>
+          <th>Nivel</th>
+          <th>Matriculados</th>
+          <th>Primer curso</th>
+          <th>Costo matrícula</th>
+          <th>Créditos</th>
+          <th>Periodos</th>
+          <th>Periodicidad</th>
+          <th>Acreditado</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => {
+            const esUdes = r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES;
+            const costo = r['COSTO MATRICULA'] > 0
+              ? '$' + (r['COSTO MATRICULA'] / 1000000).toFixed(2) + 'M'
+              : '<span style="color:rgba(230,230,230,0.3)">Pública</span>';
+            return `<tr style="${esUdes ? 'background:rgba(242,92,84,0.06)' : ''}">
+              <td>${esUdes ? `<span class="badge-udes">UDES</span> ` : ''}${r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)']}</td>
+              <td>${r['DEPARTAMENTO DE OFERTA DEL PROGRAMA'] || ''} / ${r['MUNICIPIO DE OFERTA DEL PROGRAMA'] || ''}</td>
+              <td>${r['METODOLOGÍA'] || '—'}</td>
+              <td>${r['NIVEL DE FORMACIÓN'] || '—'}</td>
+              <td>${(r.MATRICULADOS || 0).toLocaleString('es-CO')}</td>
+              <td>${(r['MATRICULADOS PRIMER CURSO'] || 0).toLocaleString('es-CO')}</td>
+              <td>${costo}</td>
+              <td>${r['NÚMERO CRÉDITOS'] || '—'}</td>
+              <td>${r['NÚMERO PERIODOS DE DURACIÓN'] || '—'}</td>
+              <td>${r.PERIODICIDAD || '—'}</td>
+              <td>${r['PROGRAMA ACREDITADO'] || '—'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>`;
+  document.getElementById('tabla-comparacion-wrap').innerHTML = html;
+}
+
+function resetFilters2() {
+  ['f2-depto','f2-nivel','f2-metodologia'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f2-acreditados').checked = false;
+  applyFiltersTab2();
+}
+
+// =====================================================
+// TAB 3 — Análisis de Brecha
+// =====================================================
+const UDES_DEPTOS  = ['SANTANDER', 'NORTE DE SANTANDER', 'CESAR'];
+const UDES_SEDES   = ['BUCARAMANGA', 'VALLEDUPAR', 'CUCUTA'];
+
+function applyFiltersTab3() {
+  if (!allData.length) return;
+  const anio3        = document.getElementById('f3-anio').value;
+  const area3        = document.getElementById('f3-area').value;
+  const nivel3       = document.getElementById('f3-nivel').value;
+  const territorio3  = document.getElementById('f3-territorio').value;
+  const soloPrivadas = document.getElementById('f3-solo-privadas').checked;
+
+  const maxAnio   = allData.reduce((m,r) => r.AÑO > m ? r.AÑO : m, 0);
+  const anioFiltro = anio3 ? Number(anio3) : maxAnio;
+
+  // Territorios para Sección A (departamental)
+  let deptosFiltro;
+  if (territorio3 === 'nacional')     deptosFiltro = null;
+  else if (!territorio3 || territorio3 === 'region') deptosFiltro = UDES_DEPTOS;
+  else                                deptosFiltro = [territorio3];
+
+  // UDES tiene este grupo en CUALQUIER parte del país (para tieneUdes correcto)
+  const gruposUdesGlobal = new Set(
+    allData
+      .filter(r => r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES)
+      .map(r => r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO'])
+      .filter(Boolean)
+  );
+
+  // Helper: ¿se incluye esta fila como competidor relevante?
+  const esCompetidorValido = r => {
+    const esUdes = r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES;
+    if (esUdes) return true; // UDES siempre se incluye
+    if (soloPrivadas && r['SECTOR IES'] === 'OFICIAL') return false;
+    return true;
+  };
+
+  // ── SECCIÓN A: oportunidades en el territorio ─────────────────────────────
+  const dataA = allData.filter(r =>
+    r.AÑO == anioFiltro &&
+    esCompetidorValido(r) &&
+    (!area3  || r['ÁREA DE CONOCIMIENTO'] === area3) &&
+    (!nivel3 || r['NIVEL DE FORMACIÓN']   === nivel3) &&
+    (!deptosFiltro || deptosFiltro.includes(r['DEPARTAMENTO DE OFERTA DEL PROGRAMA']))
+  );
+
+  const gruposA = {};
+  dataA.forEach(r => {
+    const g = r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO'];
+    if (!g) return;
+    if (!gruposA[g]) gruposA[g] = {
+      area: r['ÁREA DE CONOCIMIENTO'], nivel: r['NIVEL DE FORMACIÓN'],
+      ies: new Set(), matTotal: 0, primerCurso: 0,
+      tieneUdes: gruposUdesGlobal.has(g)
+    };
+    gruposA[g].ies.add(r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)']);
+    gruposA[g].matTotal    += (r.MATRICULADOS || 0);
+    gruposA[g].primerCurso += (r['MATRICULADOS PRIMER CURSO'] || 0);
+  });
+
+  const sinUdes = Object.entries(gruposA)
+    .filter(([,v]) => !v.tieneUdes)
+    .sort((a,b) => b[1].matTotal - a[1].matTotal);
+
+  // ── SECCIÓN B: a reforzar — mercado local en las 3 sedes UDES ────────────
+  const dataB = allData.filter(r =>
+    r.AÑO == anioFiltro &&
+    esCompetidorValido(r) &&
+    (!area3  || r['ÁREA DE CONOCIMIENTO'] === area3) &&
+    (!nivel3 || r['NIVEL DE FORMACIÓN']   === nivel3) &&
+    UDES_SEDES.includes(r['MUNICIPIO DE OFERTA DEL PROGRAMA'])
+  );
+
+  const gruposB = {};
+  dataB.forEach(r => {
+    const g = r['GRUPO_ANALITICO'] || r['PROGRAMA ACADÉMICO'];
+    if (!g) return;
+    if (!gruposB[g]) gruposB[g] = {
+      area: r['ÁREA DE CONOCIMIENTO'], nivel: r['NIVEL DE FORMACIÓN'],
+      ies: new Set(), matTotal: 0, matUdes: 0, tieneUdes: false
+    };
+    gruposB[g].ies.add(r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)']);
+    gruposB[g].matTotal += (r.MATRICULADOS || 0);
+    if (r['INSTITUCIÓN DE EDUCACIÓN SUPERIOR (IES)'] === NOMBRE_UDES) {
+      gruposB[g].tieneUdes = true;
+      gruposB[g].matUdes  += (r.MATRICULADOS || 0);
+    }
+  });
+
+  const bajaParticipacion = Object.entries(gruposB)
+    .filter(([,v]) => v.tieneUdes && v.matTotal > 0 && (v.matUdes / v.matTotal) < 0.15)
+    .sort((a,b) => (a[1].matUdes/a[1].matTotal) - (b[1].matUdes/b[1].matTotal));
+
+  // Actualizar títulos dinámicamente
+  const labelTerritorio = {
+    region: 'Región UDES (Santander, N. Santander, Cesar)',
+    nacional: 'Colombia',
+    'SANTANDER': 'Santander',
+    'NORTE DE SANTANDER': 'Norte de Santander',
+    'CESAR': 'Cesar',
+  }[territorio3] || 'Región UDES';
+
+  const privStr = soloPrivadas ? ' · solo IES privadas' : '';
+  document.getElementById('brecha-a-titulo').innerHTML =
+    `Oportunidades en ${labelTerritorio}${privStr} — sin UDES
+     <button class="btn-export" onclick="exportarCSV('tabla-brecha-a','brecha_oportunidades.csv')">⬇ Exportar CSV</button>`;
+  document.getElementById('brecha-b-titulo').innerHTML =
+    `A reforzar — UDES &lt;15% en Bucaramanga · Cúcuta · Valledupar${privStr}
+     <button class="btn-export" onclick="exportarCSV('tabla-brecha-b','brecha_reforzar.csv')">⬇ Exportar CSV</button>`;
+
+  renderBrechaA(sinUdes, anioFiltro);
+  renderBrechaB(bajaParticipacion, anioFiltro);
+}
+
+function renderBrechaA(sinUdes, anioFiltro) {
+  const container = document.getElementById('brecha-a-content');
+  if (sinUdes.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">✅</div><p>No hay programas sin presencia de UDES en este segmento</p></div>';
+    return;
+  }
+  const filas = sinUdes.slice(0, 100).map(([prog, v]) => `
+    <tr>
+      <td>${prog}</td>
+      <td>${v.area || '—'}</td>
+      <td>${v.nivel || '—'}</td>
+      <td>${v.ies.size}</td>
+      <td>${v.matTotal.toLocaleString('es-CO')}</td>
+      <td>${v.primerCurso.toLocaleString('es-CO')}</td>
+    </tr>`).join('');
+
+  container.innerHTML = `
+    <p style="font-size:12px;color:rgba(230,230,230,0.4);margin-bottom:12px">${sinUdes.length} programas sin UDES en ${anioFiltro}${sinUdes.length > 100 ? ' (mostrando top 100)' : ''}</p>
+    <div style="overflow-x:auto">
+    <table id="tabla-brecha-a">
+      <thead class="thead-accent2"><tr>
+        <th>Programa (GRUPO_ANALITICO)</th>
+        <th>Área</th>
+        <th>Nivel</th>
+        <th># IES que lo ofrecen</th>
+        <th>Matriculados mercado</th>
+        <th>Primer curso mercado</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>
+    </div>`;
+}
+
+function renderBrechaB(bajaParticipacion, anioFiltro) {
+  const container = document.getElementById('brecha-b-content');
+  if (bajaParticipacion.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🎯</div><p>UDES no tiene programas con participación inferior al 15% en este segmento</p></div>';
+    return;
+  }
+  const filas = bajaParticipacion.map(([prog, v]) => {
+    const part = v.matTotal > 0 ? (v.matUdes / v.matTotal * 100).toFixed(1) : '0.0';
+    const nComp = v.ies.size - 1; // excluir UDES
+    return `
+    <tr>
+      <td>${prog}</td>
+      <td>${nComp > 0 ? nComp : 0}</td>
+      <td>${v.matUdes.toLocaleString('es-CO')}</td>
+      <td>${v.matTotal.toLocaleString('es-CO')}</td>
+      <td><span style="color:var(--accent);font-weight:600">${part}%</span></td>
+    </tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <p style="font-size:12px;color:rgba(230,230,230,0.4);margin-bottom:12px">${bajaParticipacion.length} programas con baja participación UDES en ${anioFiltro}</p>
+    <div style="overflow-x:auto">
+    <table id="tabla-brecha-b">
+      <thead class="thead-accent"><tr>
+        <th>Programa (GRUPO_ANALITICO)</th>
+        <th># IES competencia</th>
+        <th>Matr. UDES</th>
+        <th>Matr. mercado</th>
+        <th>Participación %</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>
+    </div>`;
+}
+
+function resetFilters3() {
+  ['f3-anio','f3-area','f3-nivel'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f3-territorio').value = 'region';
+  document.getElementById('f3-solo-privadas').checked = false;
+  applyFiltersTab3();
+}
+
+// =====================================================
+// FEATURE 3 — Exportar tabla a CSV
+// =====================================================
+function exportarCSV(tablaId, nombreArchivo) {
+  const tabla = document.getElementById(tablaId);
+  if (!tabla) return;
+  const filas = [...tabla.querySelectorAll('tr')];
+  const csv = filas.map(fila =>
+    [...fila.querySelectorAll('th,td')]
+      .map(celda => '"' + (celda.textContent || '').replace(/"/g, '""').trim() + '"')
+      .join(',')
+  ).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombreArchivo; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// =====================================================
+// Botón de carga en status bar
+// =====================================================
+if (typeof Chart === 'undefined' || typeof Papa === 'undefined') {
+  document.getElementById('status-bar').textContent =
+    '⚠ Error: no se pudo cargar Chart.js o PapaParse. Verifica tu conexión a internet y recarga la página.';
+} else {
+  document.getElementById('status-bar').innerHTML =
+    '<a href="#" onclick="loadCSV();return false;" style="color:var(--accent);font-weight:600">→ Haz clic aquí para cargar matriculados_limpio.csv</a>';
+}
+</script>
+</body>
+</html>

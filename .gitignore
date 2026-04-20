@@ -1,0 +1,12 @@
+# Base de datos — no subir al repositorio (>100MB, datos sensibles)
+matriculados_limpio.csv
+mapeo_programas.csv
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de sistema Windows
+Thumbs.db
+desktop.ini
