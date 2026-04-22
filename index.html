@@ -260,6 +260,67 @@
     .pct-nacional { background: rgba(242,92,84,0.15); color: var(--accent); }
     .pct-depto    { background: rgba(255,209,102,0.15); color: var(--accent2); }
     .pct-mun      { background: rgba(91,214,201,0.15); color: var(--mint); }
+    /* Botón descarga protegida con contraseña */
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      background: rgba(255,209,102,0.12);
+      border: 1px solid rgba(255,209,102,0.35);
+      color: var(--accent2);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-download:hover {
+      background: rgba(255,209,102,0.22);
+      border-color: rgba(255,209,102,0.6);
+    }
+    /* Modal de descarga protegida */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #1f2433;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 36px 32px;
+      max-width: 400px; width: 90%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      position: relative;
+    }
+    .modal-card h2 { font-size: 18px; margin-bottom: 6px; color: var(--fog); }
+    .modal-subtitle { font-size: 13px; color: rgba(230,230,230,0.45); margin-bottom: 24px; }
+    .modal-field { margin-bottom: 16px; }
+    .modal-field label { display: block; font-size: 12px; color: rgba(230,230,230,0.6); margin-bottom: 6px; font-weight: 600; }
+    .modal-field input {
+      width: 100%; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 7px;
+      color: var(--fog); padding: 10px 12px; font-size: 14px; outline: none;
+    }
+    .modal-field input:focus { border-color: rgba(255,209,102,0.5); }
+    .modal-btn {
+      width: 100%; padding: 11px;
+      background: rgba(255,209,102,0.15); border: 1px solid rgba(255,209,102,0.4);
+      color: var(--accent2); border-radius: 7px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; margin-top: 4px;
+    }
+    .modal-btn:hover { background: rgba(255,209,102,0.25); }
+    .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .modal-error { color: #f87171; font-size: 13px; margin-top: 10px; display: none; text-align: center; }
+    .modal-close {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; color: rgba(230,230,230,0.35);
+      font-size: 20px; cursor: pointer; line-height: 1;
+    }
+    .modal-close:hover { color: var(--fog); }
     /* FEATURE 3: Export button */
     .btn-export {
       background: transparent;
@@ -286,7 +347,10 @@
     <h1>Herramienta Profesional de Investigación de Mercados</h1>
     <p>Participación de Mercado · Fuente: SNIES · Datos: 2019–2024 · Actualización: semestral</p>
   </div>
-  <span class="logo-badge">UDES</span>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button onclick="abrirModalDescarga()" class="btn-download">⬇ Descargar Base de Datos</button>
+    <span class="logo-badge">UDES</span>
+  </div>
 </header>
 
 <div class="tabs">
@@ -534,6 +598,26 @@
       </div>
     </div>
   </main>
+</div>
+
+<!-- Modal de descarga protegida -->
+<div class="modal-overlay" id="modal-descarga">
+  <div class="modal-card">
+    <button class="modal-close" onclick="cerrarModalDescarga()">✕</button>
+    <h2>⬇ Descargar Base de Datos</h2>
+    <p class="modal-subtitle">Ingresa tus credenciales para acceder al CSV del SNIES</p>
+    <div class="modal-field">
+      <label>Correo institucional</label>
+      <input type="email" id="modal-correo" placeholder="tu.correo@udes.edu.co" autocomplete="email">
+    </div>
+    <div class="modal-field">
+      <label>Contraseña de acceso</label>
+      <input type="password" id="modal-password" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') iniciarDescarga()">
+    </div>
+    <button class="modal-btn" id="modal-btn" onclick="iniciarDescarga()">⬇ Descargar ahora</button>
+    <p class="modal-error" id="modal-error">Acceso denegado. Verifica tus credenciales.</p>
+  </div>
 </div>
 
 <div class="status-bar" id="status-bar">Cargando datos...</div>
@@ -1440,6 +1524,82 @@ function exportarCSV(tablaId, nombreArchivo) {
   a.href = url; a.download = nombreArchivo; a.click();
   URL.revokeObjectURL(url);
 }
+
+// =====================================================
+// Modal de descarga protegida (JSONP)
+// =====================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8qWMr3_5AONWo1QR9kMGA23wNxIupKxP6_Nil7sndpMcXnm02zSSX7xSRkoMET1un/exec';
+
+function abrirModalDescarga() {
+  document.getElementById('modal-descarga').classList.add('active');
+  document.getElementById('modal-error').style.display = 'none';
+  setTimeout(() => document.getElementById('modal-correo').focus(), 100);
+}
+
+function cerrarModalDescarga() {
+  document.getElementById('modal-descarga').classList.remove('active');
+  document.getElementById('modal-error').style.display = 'none';
+  document.getElementById('modal-correo').value = '';
+  document.getElementById('modal-password').value = '';
+  const btn = document.getElementById('modal-btn');
+  btn.disabled = false;
+  btn.textContent = '⬇ Descargar ahora';
+}
+
+function iniciarDescarga() {
+  const email   = document.getElementById('modal-correo').value.trim();
+  const pwd     = document.getElementById('modal-password').value.trim();
+  const errorEl = document.getElementById('modal-error');
+  const btn     = document.getElementById('modal-btn');
+
+  if (!email || !pwd) {
+    errorEl.textContent = 'Por favor completa todos los campos.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = 'Verificando...';
+  errorEl.style.display = 'none';
+
+  const cbName = '_dl_' + Date.now();
+  const tag    = document.createElement('script');
+  tag.src = SCRIPT_URL
+    + '?callback=' + cbName
+    + '&email='    + encodeURIComponent(email)
+    + '&pwd='      + encodeURIComponent(pwd)
+    + '&nav='      + encodeURIComponent(navigator.userAgent.substring(0, 80));
+
+  window[cbName] = function(resp) {
+    tag.remove();
+    delete window[cbName];
+    btn.disabled    = false;
+    btn.textContent = '⬇ Descargar ahora';
+    if (resp.success) {
+      cerrarModalDescarga();
+      window.open(resp.url, '_blank');
+    } else {
+      errorEl.textContent = 'Acceso denegado. Verifica tus credenciales.';
+      errorEl.style.display = 'block';
+    }
+  };
+
+  tag.onerror = function() {
+    tag.remove();
+    delete window[cbName];
+    btn.disabled    = false;
+    btn.textContent = '⬇ Descargar ahora';
+    errorEl.textContent = 'Error de conexión. Intenta de nuevo.';
+    errorEl.style.display = 'block';
+  };
+
+  document.head.appendChild(tag);
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modal-descarga').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModalDescarga();
+});
 
 // =====================================================
 // Botón de carga en status bar
