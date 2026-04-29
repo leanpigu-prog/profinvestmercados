@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Tipología Profesoral UDES 2026 — Vicerrectoría Administrativa y Financiera</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --udes-blue: #1b3a6b;
+    --udes-blue-light: #2a5298;
+    --udes-gold: #c9a227;
+    --udes-gold-light: #f0c040;
+    --verde-ok: #198754;
+    --amarillo-alerta: #ffc107;
+    --rojo-critico: #dc3545;
+    --bg-light: #f4f6fb;
+  }
+  body { background: var(--bg-light); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; }
+  .header-bar { background: linear-gradient(135deg, var(--udes-blue) 0%, var(--udes-blue-light) 100%); color: #fff; padding: 18px 32px; }
+  .header-bar h1 { font-size: 1.4rem; font-weight: 700; margin: 0; }
+  .header-bar .subtitle { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+  .header-bar .badge-fecha { background: var(--udes-gold); color: #1b3a6b; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; }
+  .main-nav { background: var(--udes-blue); border-bottom: 3px solid var(--udes-gold); }
+  .main-nav .nav-link { color: rgba(255,255,255,0.75); font-weight: 600; padding: 14px 28px; border-radius: 0; transition: all 0.2s; }
+  .main-nav .nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .main-nav .nav-link.active { color: #fff; background: rgba(255,255,255,0.15); border-bottom: 3px solid var(--udes-gold); margin-bottom: -3px; }
+  .main-nav .nav-link .nav-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--udes-gold); color: var(--udes-blue); font-size: 0.7rem; font-weight: 800; margin-right: 8px; }
+  .section-content { display: none; padding: 24px 20px; }
+  .section-content.active { display: block; }
+  .campus-tabs .nav-link { color: var(--udes-blue); border: 1px solid #dee2e6; }
+  .campus-tabs .nav-link.active { background: var(--udes-blue); color: #fff; border-color: var(--udes-blue); }
+  .kpi-card { background: #fff; border-radius: 12px; padding: 18px 22px; box-shadow: 0 2px 8px rgba(27,58,107,0.08); border-left: 5px solid var(--udes-blue); }
+  .kpi-card .kpi-value { font-size: 2rem; font-weight: 800; color: var(--udes-blue); }
+  .kpi-card .kpi-label { font-size: 0.8rem; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
+  .table-diag th { background: var(--udes-blue); color: #fff; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+  .table-diag td { vertical-align: middle; font-size: 0.85rem; }
+  .semaforo-verde { background: #d1f0e0; color: #0a5c36; font-weight: 700; border-radius: 20px; padding: 3px 10px; font-size: 0.78rem; white-space: nowrap; }
+  .semaforo-amarillo { background: #fff3cd; color: #856404; font-weight: 700; border-radius: 20px; padding: 3px 10px; font-size: 0.78rem; white-space: nowrap; }
+  .semaforo-rojo { background: #fce4e4; color: #842029; font-weight: 700; border-radius: 20px; padding: 3px 10px; font-size: 0.78rem; white-space: nowrap; }
+  .perfil-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; }
+  .perfil-lcatedra { background: #cfe2ff; color: #084298; }
+  .perfil-misional { background: #d1e7dd; color: #0a3622; }
+  .perfil-invext { background: #fde68a; color: #6b4226; }
+  .perfil-linv { background: #e2d9f3; color: #432874; }
+  .perfil-ladm { background: #f8d7da; color: #58151c; }
+  .perfil-mt { background: #d3f4f0; color: #0c4a45; }
+  .perfil-hc { background: #f0f0f0; color: #333; }
+  .perfil-prac { background: #ffe8cc; color: #6b2a00; }
+  .perfil-otros { background: #e8e8e8; color: #444; }
+  .simulator-table th { background: var(--udes-blue); color: #fff; font-size: 0.78rem; vertical-align: middle; text-align: center; }
+  .simulator-table td { vertical-align: middle; }
+  .simulator-table input[type=range] { width: 100%; accent-color: var(--udes-blue); }
+  .simulator-table input[type=number] { width: 80px; text-align: right; font-size: 0.82rem; }
+  .nomina-panel { background: var(--udes-blue); color: #fff; border-radius: 12px; padding: 20px 26px; position: sticky; top: 8px; }
+  .nomina-panel .nval { font-size: 1.5rem; font-weight: 800; }
+  .nomina-panel .nlabel { font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.4px; }
+  .nomina-panel .delta-pos { color: #ffc107; }
+  .nomina-panel .delta-neg { color: #90ee90; }
+  .btn-reset { background: var(--udes-gold); color: var(--udes-blue); font-weight: 700; border: none; }
+  .btn-reset:hover { background: var(--udes-gold-light); color: var(--udes-blue); }
+  .hallazgo-item { border-left: 4px solid var(--udes-gold); background: #fff; padding: 10px 16px; margin-bottom: 8px; border-radius: 0 8px 8px 0; font-size: 0.85rem; }
+  .hallazgo-item .hi-title { font-weight: 700; color: var(--udes-blue); }
+  .mapeo-table th { background: var(--udes-blue); color: #fff; font-size: 0.8rem; }
+  .mapeo-table td { font-size: 0.83rem; vertical-align: middle; }
+  .variacion-pos { color: var(--rojo-critico); font-weight: 700; }
+  .variacion-neg { color: var(--verde-ok); font-weight: 700; }
+  .variacion-neutral { color: #6c757d; font-weight: 700; }
+  .chart-container { position: relative; height: 220px; }
+  .circ-table th { background: #856404; color: #fff; font-size: 0.78rem; vertical-align: middle; text-align: center; }
+  .circ-table td { vertical-align: middle; }
+  .circ-table input[type=range] { width: 100%; accent-color: #c9a227; }
+  .circ-table input[type=number] { width: 80px; text-align: right; font-size: 0.82rem; }
+  .sec-label-circ { font-size:0.75rem; font-weight:700; color:#c9a227; text-transform:uppercase; letter-spacing:0.6px; }
+  .sec-label-nueva { font-size:0.75rem; font-weight:700; color:#90ee90; text-transform:uppercase; letter-spacing:0.6px; }
+  .sec-label-delta { font-size:0.75rem; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.6px; }
+  .report-campus-card { border-radius:10px; border:1px solid #dee2e6; margin-bottom:20px; overflow:hidden; }
+  .report-campus-header { background:var(--udes-blue); color:#fff; padding:10px 18px; font-weight:700; font-size:1rem; }
+  .report-kpi-circ { background:#fff8e1; border-left:4px solid #c9a227; border-radius:6px; padding:10px 14px; }
+  .report-kpi-nueva { background:#e8f4fd; border-left:4px solid var(--udes-blue); border-radius:6px; padding:10px 14px; }
+  .report-kpi-delta { border-radius:6px; padding:10px 14px; }
+  .report-kpi-delta.ahorro { background:#d1f0e0; border-left:4px solid #198754; }
+  .report-kpi-delta.aumento { background:#fce4e4; border-left:4px solid #dc3545; }
+  .report-kpi-title { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#6c757d; }
+  .report-kpi-value { font-size:1.3rem; font-weight:800; color:var(--udes-blue); }
+  .report-kpi-sub { font-size:0.75rem; color:#6c757d; }
+  .report-detail-table th { background:#f4f6fb; color:var(--udes-blue); font-size:0.75rem; font-weight:700; }
+  .report-detail-table td { font-size:0.78rem; vertical-align:middle; }
+  .report-resumen-table th { background:var(--udes-blue); color:#fff; font-size:0.82rem; }
+  .report-resumen-table td { font-size:0.85rem; vertical-align:middle; }
+  .report-total-row { background:#e8f4fd; font-weight:800; }
+  @media print {
+    .main-nav, .btn, #reportActions { display:none !important; }
+    .section-content { display:block !important; page-break-before:always; }
+    #sec-informe { display:block !important; page-break-before:auto; }
+    body { background:#fff; font-size:10px; }
+    .report-campus-card { page-break-inside:avoid; }
+  }
+  .section-title { font-size: 1.1rem; font-weight: 700; color: var(--udes-blue); border-bottom: 2px solid var(--udes-gold); padding-bottom: 8px; margin-bottom: 16px; }
+  .footnote { font-size: 0.75rem; color: #6c757d; margin-top: 8px; }
+  @media print {
+    .main-nav, .btn, .nomina-panel-sticky-wrap { display: none !important; }
+    .section-content { display: block !important; page-break-before: always; }
+    body { background: #fff; font-size: 11px; }
+    .kpi-card, .hallazgo-item { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header-bar d-flex justify-content-between align-items-start">
+  <div>
+    <h1>🎓 Simulador de Tipología Profesoral — UDES 2026</h1>
+    <div class="subtitle">Vicerrectoría Administrativa y Financiera · Campus Valledupar · Cúcuta · Bucaramanga</div>
+  </div>
+  <div class="text-end">
+    <div class="badge-fecha d-inline-block mb-1">Período: 2026A</div>
+    <div style="font-size:0.75rem;opacity:0.7;margin-top:4px;">Generado: 29 Abril 2026</div>
+  </div>
+</div>
+
+<!-- MAIN NAV -->
+<nav class="main-nav">
+  <ul class="nav" id="mainNav">
+    <li class="nav-item">
+      <a class="nav-link active" href="#" onclick="showSection('diagnostico',this); return false;">
+        <span class="nav-num">1</span>Diagnóstico Circular vs. Realidad 2026A
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="showSection('transicion',this); return false;">
+        <span class="nav-num">2</span>Transición Nueva Tipología
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="showSection('simulador',this); return false;">
+        <span class="nav-num">3</span>Simulador Financiero Interactivo
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="showSection('informe',this); updateReport(); return false;">
+        <span class="nav-num">4</span>Informe Comparativo
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<div class="container-fluid px-3 py-2">
+
+<!-- =====================================================================
+     SECCIÓN 1: DIAGNÓSTICO
+     ===================================================================== -->
+<div id="sec-diagnostico" class="section-content active">
+  <div class="section-title">Diagnóstico: Circular PLI-006-BUC + Adendum vs. Ejecución Real 2026A</div>
+
+  <!-- Resumen ejecutivo KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="kpi-card">
+        <div class="kpi-label">Campus Valledupar — Total Planta</div>
+        <div class="kpi-value">311</div>
+        <div class="footnote">141 PTC · 73 PMT · 3 PPTC · 94 especiales</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="kpi-card">
+        <div class="kpi-label">Campus Cúcuta — Total Planta</div>
+        <div class="kpi-value">356</div>
+        <div class="footnote">132 PTC · 66 PMT · 10 PPTC · 148 especiales</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="kpi-card">
+        <div class="kpi-label">Campus Bucaramanga — Total Planta</div>
+        <div class="kpi-value">656</div>
+        <div class="footnote">239 PTC · 149 PMT · 61 PPTC · 207 especiales</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs campus -->
+  <ul class="nav nav-tabs campus-tabs mb-3" id="diagTabs">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="showCampusTab('diag','vll',this); return false;">📍 Valledupar</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showCampusTab('diag','cuc',this); return false;">📍 Cúcuta</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showCampusTab('diag','buc',this); return false;">📍 Bucaramanga</a></li>
+  </ul>
+
+  <!-- VLL -->
+  <div id="diag-vll" class="campus-panel">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <h6 class="fw-bold text-primary mb-2">Composición de planta 2026A</h6>
+        <div class="chart-container"><canvas id="chartDiagVll"></canvas></div>
+      </div>
+      <div class="col-md-7">
+        <h6 class="fw-bold text-primary mb-2">Distribución por tipo de contrato</h6>
+        <table class="table table-sm table-bordered table-diag">
+          <thead><tr><th>Tipo de Contrato</th><th>N°</th><th>%</th><th>H. docencia<br>directa (circular)</th><th>Cumplimiento<br>Adendum 2025-1</th></tr></thead>
+          <tbody>
+            <tr><td>(PTC) Profesor Tiempo Completo</td><td>141</td><td>45.3%</td><td>20h (circular) / 22-25h (adendum)</td><td><span class="semaforo-amarillo">⚠ Parcial</span></td></tr>
+            <tr><td>(PMT) Profesor Medio Tiempo</td><td>73</td><td>23.5%</td><td>10h mínimo</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PPTC) Planta Tiempo Completo</td><td>3</td><td>1.0%</td><td>18h (investigación prioritaria)</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PPMT) Planta Medio Tiempo</td><td>1</td><td>0.3%</td><td>10h mínimo</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>Comisión Administrativa</td><td>17</td><td>5.5%</td><td>mín. 6h directa</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>Prof. Prácticas Salud MT</td><td>31</td><td>10.0%</td><td>Variable (clínica)</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Prof. Prácticas Salud TC</td><td>14</td><td>4.5%</td><td>Variable (clínica)</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Bienestar / Idiomas / Informática</td><td>26</td><td>8.4%</td><td>Según rol</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>(PC) Profesor Cátedra</td><td>5</td><td>1.6%</td><td>máx. 6h (circular)</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr class="table-active fw-bold"><td>TOTAL PLANTA</td><td>311</td><td>100%</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <h6 class="fw-bold text-primary mt-3 mb-2">Semáforo de cumplimiento — Circular PLI-006-BUC + Adendum 2025-1</h6>
+    <table class="table table-sm table-bordered table-diag">
+      <thead><tr><th>Indicador</th><th>Directriz</th><th>Estimado 2026A</th><th>Brecha</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>Horas docencia directa PTC (promedio sem.)</td><td>22–25h (Adendum)</td><td>~19h</td><td>-3h a -6h</td><td><span class="semaforo-amarillo">⚠ Por debajo del Adendum</span></td></tr>
+        <tr><td>Horas docencia directa PMT (promedio sem.)</td><td>10h mínimo</td><td>~12h</td><td>+2h</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+        <tr><td>PTC con proyectos inv/ext formalizados</td><td>20h docencia si tiene proyectos</td><td>~28% del total PTC</td><td>Mayoría sin proyectos formales</td><td><span class="semaforo-amarillo">⚠ Revisar formalización</span></td></tr>
+        <tr><td>Directores con mín. 6h docencia</td><td>mín. 6h (Adendum)</td><td>Mayoritariamente sí</td><td>Casos excepcionales</td><td><span class="semaforo-verde">✓ General OK</span></td></tr>
+        <tr><td>Actividades de investigación PTC</td><td>5h inv. directa + 10h compl.</td><td>Variable (muchos sin inv. formal)</td><td>Bajo formalización</td><td><span class="semaforo-rojo">✗ Formalización deficiente</span></td></tr>
+        <tr><td>Diferenciación funcional de planta</td><td>Roles distintos PTC / PPTC</td><td>Sin diferenciación real en nómina</td><td>Todos cargados igual</td><td><span class="semaforo-rojo">✗ Requiere nueva tipología</span></td></tr>
+      </tbody>
+    </table>
+    <div class="row g-2 mt-2">
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 1:</span> El 45.3% de la planta (141 PTC) opera sin diferenciación misional documentada. La mayoría registra &lt;20h de docencia directa por semana, acumulando horas en actividades de "Calidad de Programas" y "Preparación de Clases" que superan el 40% de su carga total.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 2:</span> Las 31 horas de "Calidad de Programas" (DC-CP = 20h/sem) asignadas a varios PTC absorben la carga que debería corresponder a docencia directa, generando subreporte de horas de enseñanza frente al Adendum 2025-1.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 3:</span> Los 17 Profesores en Comisión Administrativa cumplen el mínimo de 6h docencia del Adendum, pero su carga de dirección no está diferenciada en la nómina como un perfil separado.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 4:</span> Los 3 PPTC presentan distribución mixta (investigación + docencia) sin marco normativo claro bajo la circular vigente. La nueva tipología resuelve esta ambigüedad mediante el perfil Investigador/Extensionista.</div></div>
+    </div>
+  </div>
+
+  <!-- CUC -->
+  <div id="diag-cuc" class="campus-panel" style="display:none;">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <h6 class="fw-bold text-primary mb-2">Composición de planta 2026A</h6>
+        <div class="chart-container"><canvas id="chartDiagCuc"></canvas></div>
+      </div>
+      <div class="col-md-7">
+        <h6 class="fw-bold text-primary mb-2">Distribución por tipo de contrato</h6>
+        <table class="table table-sm table-bordered table-diag">
+          <thead><tr><th>Tipo de Contrato</th><th>N°</th><th>%</th><th>H. docencia<br>directa (circular)</th><th>Cumplimiento<br>Adendum 2025-1</th></tr></thead>
+          <tbody>
+            <tr><td>(PTC) Profesor Tiempo Completo</td><td>132</td><td>37.1%</td><td>20h (circular) / 22-25h (adendum)</td><td><span class="semaforo-amarillo">⚠ Parcial</span></td></tr>
+            <tr><td>(PMT) Profesor Medio Tiempo</td><td>66</td><td>18.5%</td><td>10h mínimo</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PPTC) Planta Tiempo Completo</td><td>10</td><td>2.8%</td><td>18h (investigación prioritaria)</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PTCVE) TC Vinculación Especial</td><td>2</td><td>0.6%</td><td>10h (10h inv. directa 25h)</td><td><span class="semaforo-verde">✓ Perfil investigador</span></td></tr>
+            <tr><td>Comisión Administrativa</td><td>16</td><td>4.5%</td><td>mín. 6h directa</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>Prof. Prácticas Salud MT</td><td>70</td><td>19.7%</td><td>Variable (clínica)</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Prof. Prácticas Salud TC</td><td>14</td><td>3.9%</td><td>Variable (clínica)</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Bienestar / Idiomas / Informática / Conv.</td><td>29</td><td>8.1%</td><td>Según rol</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>(PC) Profesor Cátedra</td><td>17</td><td>4.8%</td><td>máx. 6h (circular)</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr class="table-active fw-bold"><td>TOTAL PLANTA</td><td>356</td><td>100%</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <h6 class="fw-bold text-primary mt-3 mb-2">Semáforo de cumplimiento — Campus Cúcuta</h6>
+    <table class="table table-sm table-bordered table-diag">
+      <thead><tr><th>Indicador</th><th>Directriz</th><th>Estimado 2026A</th><th>Brecha</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>Horas docencia directa PTC (promedio sem.)</td><td>22–25h (Adendum)</td><td>~20h</td><td>-2h a -5h</td><td><span class="semaforo-amarillo">⚠ Por debajo del Adendum</span></td></tr>
+        <tr><td>Horas docencia directa PMT (promedio sem.)</td><td>10h mínimo</td><td>~12h</td><td>+2h</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+        <tr><td>PTCVE con proyectos externos activos</td><td>25h inv. (15h conv.ext. mín.)</td><td>2 profesores con perfil investigador</td><td>Volumen insuficiente</td><td><span class="semaforo-amarillo">⚠ Bajo número</span></td></tr>
+        <tr><td>Diferenciación funcional de planta</td><td>Roles distintos PTC / PPTC</td><td>Sin diferenciación en nómina</td><td>Todos registrados igual</td><td><span class="semaforo-rojo">✗ Requiere nueva tipología</span></td></tr>
+        <tr><td>Prof. Prácticas Salud: proporción</td><td>Según matrícula médica</td><td>70 MT = 19.7% de planta</td><td>Alta proporción clínicos</td><td><span class="semaforo-amarillo">⚠ Revisar sostenibilidad</span></td></tr>
+        <tr><td>Actividades de investigación PTC</td><td>5h inv. directa (circular)</td><td>Minoría con inv. formal</td><td>Bajo formalización</td><td><span class="semaforo-rojo">✗ Formalización deficiente</span></td></tr>
+      </tbody>
+    </table>
+    <div class="row g-2 mt-2">
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 1:</span> Cúcuta concentra el mayor número de Profesores de Prácticas de Salud Clínica MT (70 profesores, 19.7% de la planta), lo que genera una estructura de costos diferenciada respecto a Valledupar y Bucaramanga, dada la fuerte vocación de Ciencias de la Salud del campus.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 2:</span> Los 2 PTCVE representan el único núcleo investigador de alto perfil del campus. La nueva tipología debe fortalecer este componente identificando PPTC con capacidad de asumir el rol Investigador/Extensionista.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 3:</span> El 37.1% de PTC presenta el mismo déficit de diferenciación misional que en los demás campus. Con el Adendum, varios profesores deben aumentar su docencia directa de ~20h a 22-25h.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 4:</span> Los 10 PPTC tienen mejor distribución horaria (investigación + docencia) pero sin marco normativo diferenciado. Son el candidato natural para el perfil Misional o Investigador/Extensionista.</div></div>
+    </div>
+  </div>
+
+  <!-- BUC -->
+  <div id="diag-buc" class="campus-panel" style="display:none;">
+    <div class="row g-3">
+      <div class="col-md-5">
+        <h6 class="fw-bold text-primary mb-2">Composición de planta 2026A</h6>
+        <div class="chart-container"><canvas id="chartDiagBuc"></canvas></div>
+      </div>
+      <div class="col-md-7">
+        <h6 class="fw-bold text-primary mb-2">Distribución por tipo de contrato</h6>
+        <table class="table table-sm table-bordered table-diag">
+          <thead><tr><th>Tipo de Contrato</th><th>N°</th><th>%</th><th>H. docencia<br>directa (circular)</th><th>Cumplimiento<br>Adendum 2025-1</th></tr></thead>
+          <tbody>
+            <tr><td>(PTC) Profesor Tiempo Completo</td><td>239</td><td>36.4%</td><td>20h (circular) / 22-25h (adendum)</td><td><span class="semaforo-amarillo">⚠ Parcial</span></td></tr>
+            <tr><td>(PMT) Profesor Medio Tiempo</td><td>149</td><td>22.7%</td><td>10h mínimo</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PPTC) Planta Tiempo Completo</td><td>61</td><td>9.3%</td><td>18h (investigación prioritaria)</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PPMT) Planta Medio Tiempo</td><td>6</td><td>0.9%</td><td>10h mínimo</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>(PTCVE) TC Vinculación Especial</td><td>10</td><td>1.5%</td><td>10h (25h inv.)</td><td><span class="semaforo-verde">✓ Perfil investigador</span></td></tr>
+            <tr><td>Comisión Administrativa</td><td>36</td><td>5.5%</td><td>mín. 6h directa</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>Prof. Prácticas Salud MT</td><td>42</td><td>6.4%</td><td>Variable (clínica)</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Prof. Prácticas Salud TC</td><td>30</td><td>4.6%</td><td>Variable (clínica)</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Bienestar / Idiomas / Informática</td><td>54</td><td>8.2%</td><td>Según rol</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>Convenio Docencia Servicio</td><td>17</td><td>2.6%</td><td>20-22h</td><td><span class="semaforo-verde">✓ Estructura OK</span></td></tr>
+            <tr><td>(PC) Profesor Cátedra</td><td>11</td><td>1.7%</td><td>máx. 6h (circular)</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+            <tr><td>Otros (CPS)</td><td>1</td><td>0.2%</td><td>—</td><td>—</td></tr>
+            <tr class="table-active fw-bold"><td>TOTAL PLANTA</td><td>656</td><td>100%</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <h6 class="fw-bold text-primary mt-3 mb-2">Semáforo de cumplimiento — Campus Bucaramanga</h6>
+    <table class="table table-sm table-bordered table-diag">
+      <thead><tr><th>Indicador</th><th>Directriz</th><th>Estimado 2026A</th><th>Brecha</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>Horas docencia directa PTC (promedio sem.)</td><td>22–25h (Adendum)</td><td>~21h</td><td>-1h a -4h</td><td><span class="semaforo-amarillo">⚠ Aproximado al Adendum</span></td></tr>
+        <tr><td>Horas docencia directa PMT (promedio sem.)</td><td>10h mínimo</td><td>~12h</td><td>+2h</td><td><span class="semaforo-verde">✓ Cumple</span></td></tr>
+        <tr><td>PTCVE con proyectos externos activos</td><td>25h inv. (ext. obligatoria)</td><td>10 investigadores activos</td><td>Núcleo investigador sólido</td><td><span class="semaforo-verde">✓ Mejor campus</span></td></tr>
+        <tr><td>PPTC con función investigadora documentada</td><td>15h inv. + 7h compl. (circular)</td><td>61 planta TC, muchos con inv. activa</td><td>Formalización variable</td><td><span class="semaforo-amarillo">⚠ Documentar PTP</span></td></tr>
+        <tr><td>Diferenciación funcional de planta</td><td>Roles distintos PTC / PPTC / PTCVE</td><td>Parcial (PTCVE diferenciado)</td><td>PTC/PPTC sin diferencia formal</td><td><span class="semaforo-amarillo">⚠ En transición</span></td></tr>
+        <tr><td>Escalafón promedio (madurez planta)</td><td>—</td><td>Mayor % Asociado/Titular vs. otros campus</td><td>Costo/profesor > otros campus</td><td><span class="semaforo-amarillo">⚠ Sostenibilidad financiera</span></td></tr>
+      </tbody>
+    </table>
+    <div class="row g-2 mt-2">
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 1:</span> Bucaramanga es el campus con mayor madurez de planta: 61 PPTC (9.3%) y 10 PTCVE (1.5%) representan un núcleo investigador consolidado. Esto genera el mayor costo promedio por profesor de los 3 campus.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 2:</span> Los 239 PTC tienen una distribución horaria más cercana al Adendum (~21h docencia directa) que los otros campus. Sin embargo, la heterogeneidad es alta: investigadores cargados igual que catedráticos puros.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 3:</span> Los 36 Profesores en Comisión Administrativa (5.5% de la planta) representan la mayor proporción de directivos entre los 3 campus, lo que refleja la mayor escala académica y número de programas.</div></div>
+      <div class="col-12"><div class="hallazgo-item"><span class="hi-title">Hallazgo 4:</span> Los 30 Profesores de Prácticas TC con categoría Clínico ($6.447.000/mes) representan el segmento de mayor costo unitario. Su proporción respecto al total es del 4.6%, pero su impacto en nómina es desproporcionado.</div></div>
+    </div>
+  </div>
+</div><!-- fin sec-diagnostico -->
+
+
+<!-- =====================================================================
+     SECCIÓN 2: TRANSICIÓN
+     ===================================================================== -->
+<div id="sec-transicion" class="section-content">
+  <div class="section-title">Transición: Aplicación de Nueva Tipología Funcional (Borrador V1 — 24 Abril 2026)</div>
+
+  <!-- Tabla de mapeo -->
+  <h6 class="fw-bold text-primary mb-2">Reglas de clasificación: Tipología vigente → Nuevos perfiles funcionales</h6>
+  <div class="alert alert-info py-2 px-3 mb-3" style="font-size:0.82rem;">
+    <strong>Criterio de transición:</strong> El perfil se asigna según la función misional primaria documentada en el Plan de Trabajo Profesoral (PTP) del semestre 2026A. La clasificación no altera el escalafón ni el contrato actual.
+  </div>
+  <table class="table table-sm table-bordered mapeo-table mb-4">
+    <thead>
+      <tr><th>Tipo actual (Circular 2023)</th><th>Condición observada 2026A</th><th>Nuevo Perfil Funcional</th><th>Horas docencia nueva</th><th>Horas inv./ext. nueva</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PTC / PPTC</td>
+        <td>Doc. directa &gt; 20h/sem sin inv/ext formal</td>
+        <td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra</span></td>
+        <td>22–25h</td><td>0h (o eventual)</td>
+      </tr>
+      <tr>
+        <td>PTC / PPTC</td>
+        <td>Doc. directa 18–20h + inv/ext formalizada</td>
+        <td><span class="perfil-badge perfil-misional">🔬 Misional</span></td>
+        <td>18–20h</td><td>mín. 6h</td>
+      </tr>
+      <tr>
+        <td>PPTC / PTC con carga investigadora</td>
+        <td>Doc. directa 12–16h + inv/ext ≥ 16h/sem</td>
+        <td><span class="perfil-badge perfil-invext">🧪 Investigador / Extensionista</span></td>
+        <td>12–16h</td><td>mín. 16h</td>
+      </tr>
+      <tr>
+        <td>PTCVE Investigador</td>
+        <td>Doc. ≤ 12h (posgrado) + conv. externa activa</td>
+        <td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación</span></td>
+        <td>8–10h (posgrado)</td><td>mín. 25h (ext. obligatoria)</td>
+      </tr>
+      <tr>
+        <td>Comisión Administrativa</td>
+        <td>Director de Programa / Coordinador Depto.</td>
+        <td><span class="perfil-badge perfil-ladm">🏛 Líder Administrativo</span></td>
+        <td>6h</td><td>— (dirección 32h)</td>
+      </tr>
+      <tr>
+        <td>PMT / PPMT</td>
+        <td>Todos los perfiles en versión 20h</td>
+        <td><span class="perfil-badge perfil-mt">⏱ Medio Tiempo (proporcional)</span></td>
+        <td>11–13h (proporc.)</td><td>Según perfil</td>
+      </tr>
+      <tr>
+        <td>PC, Instructores, Conv. Docencia</td>
+        <td>Sin cambio de perfil</td>
+        <td><span class="perfil-badge perfil-hc">🎓 Hora Cátedra / Especial</span></td>
+        <td>máx. 25h</td><td>hasta 4h</td>
+      </tr>
+      <tr>
+        <td>Prof. Prácticas Clínica TC/MT</td>
+        <td>Vinculación especial clínico-asistencial</td>
+        <td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas</span></td>
+        <td>Según especialidad</td><td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Tabs campus transición -->
+  <ul class="nav nav-tabs campus-tabs mb-3" id="transTabs">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="showCampusTab('trans','vll',this); return false;">📍 Valledupar</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showCampusTab('trans','cuc',this); return false;">📍 Cúcuta</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showCampusTab('trans','buc',this); return false;">📍 Bucaramanga</a></li>
+  </ul>
+
+  <!-- Trans VLL -->
+  <div id="trans-vll" class="campus-panel">
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="chart-container"><canvas id="chartTransVll"></canvas></div>
+      </div>
+      <div class="col-md-8">
+        <table class="table table-sm table-bordered table-diag">
+          <thead><tr><th>Nuevo Perfil Funcional</th><th>Tipo origen</th><th>N° proyectado</th><th>% planta</th><th>Variación vs. actual</th></tr></thead>
+          <tbody>
+            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra TC</span></td><td>PTC (alta docencia)</td><td>88</td><td>28.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-misional">🔬 Misional TC</span></td><td>PTC/PPTC (con inv/ext)</td><td>43</td><td>13.8%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-invext">🧪 Investigador/Extensionista TC</span></td><td>PTC/PPTC (inv. prioritaria)</td><td>13</td><td>4.2%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación TC</span></td><td>PTCVE (sin presencia en VLL)</td><td>0</td><td>0%</td><td><span class="variacion-neg">→ Fortalecer</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-ladm">🏛 Líder Administrativo</span></td><td>Comisión Administrativa</td><td>17</td><td>5.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-mt">⏱ MT (todos los perfiles)</span></td><td>PMT / PPMT</td><td>74</td><td>23.8%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-hc">🎓 Hora Cátedra / Instructores</span></td><td>PC + Instructores</td><td>14</td><td>4.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas MT</span></td><td>Prof. Prácticas MT</td><td>31</td><td>10.0%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas TC</span></td><td>Prof. Prácticas TC</td><td>14</td><td>4.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-otros">🏢 Bienestar y Otros</span></td><td>Bienestar / Idiomas / Informática</td><td>17</td><td>5.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr class="table-active fw-bold"><td colspan="2">TOTAL PLANTA</td><td>311</td><td>100%</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="alert alert-warning py-2 px-3" style="font-size:0.82rem;">
+      <strong>Resumen Valledupar:</strong> La nueva tipología transforma 144 PTC+PPTC en 3 perfiles diferenciados: 88 Líderes en Cátedra (61%), 43 Misionales (30%) y 13 Investigadores/Extensionistas (9%). <strong>Recomendación:</strong> Formalizar al menos 1-2 investigadores bajo convocatoria externa para activar el perfil Líder en Investigación en 2026B.
+    </div>
+  </div>
+
+  <!-- Trans CUC -->
+  <div id="trans-cuc" class="campus-panel" style="display:none;">
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="chart-container"><canvas id="chartTransCuc"></canvas></div>
+      </div>
+      <div class="col-md-8">
+        <table class="table table-sm table-bordered table-diag">
+          <thead><tr><th>Nuevo Perfil Funcional</th><th>Tipo origen</th><th>N° proyectado</th><th>% planta</th><th>Variación vs. actual</th></tr></thead>
+          <tbody>
+            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra TC</span></td><td>PTC (alta docencia)</td><td>76</td><td>21.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-misional">🔬 Misional TC</span></td><td>PTC/PPTC (con inv/ext)</td><td>46</td><td>12.9%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-invext">🧪 Investigador/Extensionista TC</span></td><td>PTC/PPTC (inv. prioritaria)</td><td>18</td><td>5.1%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación TC</span></td><td>PTCVE</td><td>2</td><td>0.6%</td><td><span class="variacion-neutral">= consolida PTCVE</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-ladm">🏛 Líder Administrativo</span></td><td>Comisión Administrativa</td><td>16</td><td>4.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-mt">⏱ MT (todos los perfiles)</span></td><td>PMT</td><td>66</td><td>18.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-hc">🎓 Hora Cátedra / Instructores</span></td><td>PC + Instructores + Conv.</td><td>35</td><td>9.8%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas MT</span></td><td>Prof. Prácticas MT</td><td>70</td><td>19.7%</td><td><span class="variacion-pos">⚠ Alto % vs campus</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas TC</span></td><td>Prof. Prácticas TC</td><td>14</td><td>3.9%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-otros">🏢 Bienestar y Otros</span></td><td>Bienestar / Idiomas / Informática</td><td>13</td><td>3.7%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr class="table-active fw-bold"><td colspan="2">TOTAL PLANTA</td><td>356</td><td>100%</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="alert alert-warning py-2 px-3" style="font-size:0.82rem;">
+      <strong>Resumen Cúcuta:</strong> La nueva tipología diferencia 140 PTC+PPTC+PTCVE en 4 perfiles. <strong>Punto crítico:</strong> Los 70 Profesores de Prácticas MT (19.7% de la planta) representan un segmento con estructura de costos separada que debe analizarse independientemente para la sostenibilidad del campus.
+    </div>
+  </div>
+
+  <!-- Trans BUC -->
+  <div id="trans-buc" class="campus-panel" style="display:none;">
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="chart-container"><canvas id="chartTransBuc"></canvas></div>
+      </div>
+      <div class="col-md-8">
+        <table class="table table-sm table-bordered table-diag">
+          <thead><tr><th>Nuevo Perfil Funcional</th><th>Tipo origen</th><th>N° proyectado</th><th>% planta</th><th>Variación vs. actual</th></tr></thead>
+          <tbody>
+            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra TC</span></td><td>PTC (alta docencia)</td><td>120</td><td>18.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-misional">🔬 Misional TC</span></td><td>PTC/PPTC (con inv/ext)</td><td>100</td><td>15.2%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-invext">🧪 Investigador/Extensionista TC</span></td><td>PTC/PPTC (inv. prioritaria)</td><td>60</td><td>9.1%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación TC</span></td><td>PTCVE (10)</td><td>10</td><td>1.5%</td><td><span class="variacion-neutral">= consolida PTCVE</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-ladm">🏛 Líder Administrativo</span></td><td>Comisión Administrativa</td><td>36</td><td>5.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-mt">⏱ MT (todos los perfiles)</span></td><td>PMT / PPMT</td><td>155</td><td>23.6%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-hc">🎓 Hora Cátedra / Instructores</span></td><td>PC + Instructores</td><td>36</td><td>5.5%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas MT</span></td><td>Prof. Prácticas MT + Conv.</td><td>59</td><td>9.0%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-prac">🏥 Prácticas Clínicas TC</span></td><td>Prof. Prácticas TC</td><td>30</td><td>4.6%</td><td><span class="variacion-pos">⚠ Alto costo (Clínico)</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-otros">🏢 Bienestar y Otros</span></td><td>Bienestar / Idiomas / Informática</td><td>50</td><td>7.6%</td><td><span class="variacion-neutral">= sin cambio</span></td></tr>
+            <tr class="table-active fw-bold"><td colspan="2">TOTAL PLANTA</td><td>656</td><td>100%</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="alert alert-warning py-2 px-3" style="font-size:0.82rem;">
+      <strong>Resumen Bucaramanga:</strong> La nueva tipología diferencia 310 TC (PTC+PPTC+PTCVE) en 4 perfiles con una distribución más madura: 38% Cátedra, 32% Misional, 19% Investigador, 3% Líder Investigación. <strong>Punto crítico:</strong> Los 30 Prácticas TC con salario Clínico ($6.4M) requieren análisis específico de sostenibilidad dado su impacto desproporcionado en la nómina.
+    </div>
+  </div>
+</div><!-- fin sec-transicion -->
+
+
+<!-- =====================================================================
+     SECCIÓN 3: SIMULADOR COMPARATIVO
+     ===================================================================== -->
+<div id="sec-simulador" class="section-content">
+  <div class="section-title">Simulador Comparativo — Circular Anterior vs. Nueva Tipología 2026</div>
+
+  <div class="alert alert-primary py-2 px-3 mb-3" style="font-size:0.82rem;">
+    <strong>Cómo usar:</strong> Ajuste cantidades con los <strong>sliders</strong> y modifique <strong>salarios</strong> y <strong>prestacional %</strong> en ambas tablas.
+    El panel lateral calcula en tiempo real la diferencia financiera entre la circular anterior y la nueva tipología propuesta.
+    Use <strong>"Restablecer"</strong> en cada tabla para volver a los datos base.
+  </div>
+
+  <!-- Tabs campus simulador -->
+  <ul class="nav nav-tabs campus-tabs mb-3" id="simTabs">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="showCampusTab('sim','vll',this); return false;">📍 Valledupar</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showCampusTab('sim','cuc',this); return false;">📍 Cúcuta</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showCampusTab('sim','buc',this); return false;">📍 Bucaramanga</a></li>
+  </ul>
+
+  <!-- SIM VLL -->
+  <div id="sim-vll" class="campus-panel">
+    <div class="row g-3">
+      <div class="col-lg-9">
+        <!-- TABLA 1: Circular anterior -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0" style="color:#856404;">📋 Circular anterior — PLI-006-BUC (tipología vigente)</h6>
+          <button class="btn btn-sm btn-outline-warning" onclick="resetCircular('vll')">↺ Restablecer circular</button>
+        </div>
+        <table class="table table-sm table-bordered circ-table" id="circTableVll">
+          <thead>
+            <tr>
+              <th style="width:24%">Tipo de contrato</th>
+              <th style="width:22%">Cantidad <small>(slider)</small></th>
+              <th style="width:7%" class="text-center">N°</th>
+              <th style="width:16%">Salario Prom.<br>($/mes)</th>
+              <th style="width:7%" class="text-center">Prest.<br>%</th>
+              <th style="width:12%" class="text-center">Costo<br>Mensual</th>
+              <th style="width:12%" class="text-center">Costo<br>c/Prest.</th>
+            </tr>
+          </thead>
+          <tbody id="circBodyVll"></tbody>
+          <tfoot id="circFootVll"></tfoot>
+        </table>
+        <div class="row g-2 mb-1">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:0.8rem;"><strong>Meses por semestre (circular)</strong></label>
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control" id="mesesCircVll" value="4" min="1" max="12" onchange="recalcAll('vll')">
+              <span class="input-group-text">meses</span>
+            </div>
+          </div>
+        </div>
+        <hr style="border:2px solid var(--udes-gold);margin:14px 0;">
+        <!-- TABLA 2: Nueva tipología -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Borrador V1)</h6>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-reset" onclick="resetSimulator('vll')">↺ Restablecer 2026A</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="saveScenario('vll')">💾 Guardar</button>
+            <button class="btn btn-sm btn-outline-dark d-print-none" onclick="window.print()">🖨</button>
+          </div>
+        </div>
+        <table class="table table-sm table-bordered simulator-table" id="simTableVll">
+          <thead>
+            <tr>
+              <th style="width:20%">Perfil / Categoría</th>
+              <th style="width:8%" class="text-center">N° Base<br>2026A</th>
+              <th style="width:20%">Cantidad Propuesta <small>(slider)</small></th>
+              <th style="width:7%" class="text-center">N° Prop.</th>
+              <th style="width:14%">Salario Prom.<br>($/mes)</th>
+              <th style="width:7%" class="text-center">Prest.<br>%</th>
+              <th style="width:12%" class="text-center">Costo Mensual<br>Propuesto</th>
+              <th style="width:12%" class="text-center">Variación<br>vs. Circular</th>
+            </tr>
+          </thead>
+          <tbody id="simBodyVll"></tbody>
+          <tfoot id="simFootVll"></tfoot>
+        </table>
+        <div class="row g-2 mt-1">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:0.8rem;"><strong>Meses por semestre (nueva tipología)</strong></label>
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control" id="mesesVll" value="4" min="1" max="12" onchange="recalcAll('vll')">
+              <span class="input-group-text">meses</span>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="alert alert-info py-1 px-2 mb-0" style="font-size:0.78rem;">
+              <strong>Prest. %:</strong> Editable por fila en ambas tablas. TC=52%, MT=46%, HC=35%.
+            </div>
+          </div>
+        </div>
+        <p class="footnote mt-2">* Salarios circular: estimados promedio 2026A por tipo. Salarios nueva tipología: promedio real según perfil funcional.</p>
+      </div>
+      <div class="col-lg-3">
+        <div class="nomina-panel" style="position:sticky;top:8px;">
+          <div style="font-size:0.85rem;font-weight:800;letter-spacing:0.3px;">⚖️ COMPARATIVO · VALLEDUPAR</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-circ">📋 Circular Anterior</div>
+          <div class="nlabel mt-1">Nómina mensual</div>
+          <div class="nval" id="nomCircVll">—</div>
+          <div class="nlabel mt-1">Costo semestral</div>
+          <div class="nval" id="nomSemCircVll" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">Con prestacional</div>
+          <div class="nval" id="nomPrestCircVll" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">N° profesores</div>
+          <div class="nval" id="totalCircVll" style="font-size:1rem;">—</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-nueva">🆕 Nueva Tipología</div>
+          <div class="nlabel mt-1">Nómina mensual</div>
+          <div class="nval" id="nomPropVll">—</div>
+          <div class="nlabel mt-1">Costo semestral</div>
+          <div class="nval" id="nomSemVll" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">Con prestacional</div>
+          <div class="nval" id="nomPrestVll" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">N° profesores</div>
+          <div class="nval" id="totalProfVll" style="font-size:1rem;">—</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-delta">DIFERENCIA (nueva − circular)</div>
+          <div class="nlabel mt-1">Δ mensual</div>
+          <div class="nval" id="nomDeltaVll">—</div>
+          <div class="nlabel mt-1" id="nomDeltaPctVll" style="font-size:0.78rem;"></div>
+          <div class="nlabel mt-1">Δ semestral c/prest.</div>
+          <div class="nval" id="nomDeltaPrestVll" style="font-size:1rem;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIM CUC -->
+  <div id="sim-cuc" class="campus-panel" style="display:none;">
+    <div class="row g-3">
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0" style="color:#856404;">📋 Circular anterior — PLI-006-BUC (tipología vigente)</h6>
+          <button class="btn btn-sm btn-outline-warning" onclick="resetCircular('cuc')">↺ Restablecer circular</button>
+        </div>
+        <table class="table table-sm table-bordered circ-table" id="circTableCuc">
+          <thead>
+            <tr>
+              <th style="width:24%">Tipo de contrato</th>
+              <th style="width:22%">Cantidad <small>(slider)</small></th>
+              <th style="width:7%" class="text-center">N°</th>
+              <th style="width:16%">Salario Prom.<br>($/mes)</th>
+              <th style="width:7%" class="text-center">Prest.<br>%</th>
+              <th style="width:12%" class="text-center">Costo<br>Mensual</th>
+              <th style="width:12%" class="text-center">Costo<br>c/Prest.</th>
+            </tr>
+          </thead>
+          <tbody id="circBodyCuc"></tbody>
+          <tfoot id="circFootCuc"></tfoot>
+        </table>
+        <div class="row g-2 mb-1">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:0.8rem;"><strong>Meses por semestre (circular)</strong></label>
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control" id="mesesCircCuc" value="4" min="1" max="12" onchange="recalcAll('cuc')">
+              <span class="input-group-text">meses</span>
+            </div>
+          </div>
+        </div>
+        <hr style="border:2px solid var(--udes-gold);margin:14px 0;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Borrador V1)</h6>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-reset" onclick="resetSimulator('cuc')">↺ Restablecer 2026A</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="saveScenario('cuc')">💾 Guardar</button>
+          </div>
+        </div>
+        <table class="table table-sm table-bordered simulator-table" id="simTableCuc">
+          <thead>
+            <tr>
+              <th style="width:20%">Perfil / Categoría</th>
+              <th style="width:8%" class="text-center">N° Base<br>2026A</th>
+              <th style="width:20%">Cantidad Propuesta <small>(slider)</small></th>
+              <th style="width:7%" class="text-center">N° Prop.</th>
+              <th style="width:14%">Salario Prom.<br>($/mes)</th>
+              <th style="width:7%" class="text-center">Prest.<br>%</th>
+              <th style="width:12%" class="text-center">Costo Mensual<br>Propuesto</th>
+              <th style="width:12%" class="text-center">Variación<br>vs. Circular</th>
+            </tr>
+          </thead>
+          <tbody id="simBodyCuc"></tbody>
+          <tfoot id="simFootCuc"></tfoot>
+        </table>
+        <div class="row g-2 mt-1">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:0.8rem;"><strong>Meses por semestre (nueva tipología)</strong></label>
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control" id="mesesCuc" value="4" min="1" max="12" onchange="recalcAll('cuc')">
+              <span class="input-group-text">meses</span>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="alert alert-info py-1 px-2 mb-0" style="font-size:0.78rem;">
+              <strong>Prest. %:</strong> Editable por fila en ambas tablas. TC=52%, MT=46%, HC=35%.
+            </div>
+          </div>
+        </div>
+        <p class="footnote mt-2">* Salarios: promedio real 2026A por tipo/perfil.</p>
+      </div>
+      <div class="col-lg-3">
+        <div class="nomina-panel" style="position:sticky;top:8px;">
+          <div style="font-size:0.85rem;font-weight:800;">⚖️ COMPARATIVO · CÚCUTA</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-circ">📋 Circular Anterior</div>
+          <div class="nlabel mt-1">Nómina mensual</div>
+          <div class="nval" id="nomCircCuc">—</div>
+          <div class="nlabel mt-1">Costo semestral</div>
+          <div class="nval" id="nomSemCircCuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">Con prestacional</div>
+          <div class="nval" id="nomPrestCircCuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">N° profesores</div>
+          <div class="nval" id="totalCircCuc" style="font-size:1rem;">—</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-nueva">🆕 Nueva Tipología</div>
+          <div class="nlabel mt-1">Nómina mensual</div>
+          <div class="nval" id="nomPropCuc">—</div>
+          <div class="nlabel mt-1">Costo semestral</div>
+          <div class="nval" id="nomSemCuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">Con prestacional</div>
+          <div class="nval" id="nomPrestCuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">N° profesores</div>
+          <div class="nval" id="totalProfCuc" style="font-size:1rem;">—</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-delta">DIFERENCIA (nueva − circular)</div>
+          <div class="nlabel mt-1">Δ mensual</div>
+          <div class="nval" id="nomDeltaCuc">—</div>
+          <div class="nlabel mt-1" id="nomDeltaPctCuc" style="font-size:0.78rem;"></div>
+          <div class="nlabel mt-1">Δ semestral c/prest.</div>
+          <div class="nval" id="nomDeltaPrestCuc" style="font-size:1rem;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIM BUC -->
+  <div id="sim-buc" class="campus-panel" style="display:none;">
+    <div class="row g-3">
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0" style="color:#856404;">📋 Circular anterior — PLI-006-BUC (tipología vigente)</h6>
+          <button class="btn btn-sm btn-outline-warning" onclick="resetCircular('buc')">↺ Restablecer circular</button>
+        </div>
+        <table class="table table-sm table-bordered circ-table" id="circTableBuc">
+          <thead>
+            <tr>
+              <th style="width:24%">Tipo de contrato</th>
+              <th style="width:22%">Cantidad <small>(slider)</small></th>
+              <th style="width:7%" class="text-center">N°</th>
+              <th style="width:16%">Salario Prom.<br>($/mes)</th>
+              <th style="width:7%" class="text-center">Prest.<br>%</th>
+              <th style="width:12%" class="text-center">Costo<br>Mensual</th>
+              <th style="width:12%" class="text-center">Costo<br>c/Prest.</th>
+            </tr>
+          </thead>
+          <tbody id="circBodyBuc"></tbody>
+          <tfoot id="circFootBuc"></tfoot>
+        </table>
+        <div class="row g-2 mb-1">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:0.8rem;"><strong>Meses por semestre (circular)</strong></label>
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control" id="mesesCircBuc" value="4" min="1" max="12" onchange="recalcAll('buc')">
+              <span class="input-group-text">meses</span>
+            </div>
+          </div>
+        </div>
+        <hr style="border:2px solid var(--udes-gold);margin:14px 0;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Borrador V1)</h6>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-reset" onclick="resetSimulator('buc')">↺ Restablecer 2026A</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="saveScenario('buc')">💾 Guardar</button>
+          </div>
+        </div>
+        <table class="table table-sm table-bordered simulator-table" id="simTableBuc">
+          <thead>
+            <tr>
+              <th style="width:20%">Perfil / Categoría</th>
+              <th style="width:8%" class="text-center">N° Base<br>2026A</th>
+              <th style="width:20%">Cantidad Propuesta <small>(slider)</small></th>
+              <th style="width:7%" class="text-center">N° Prop.</th>
+              <th style="width:14%">Salario Prom.<br>($/mes)</th>
+              <th style="width:7%" class="text-center">Prest.<br>%</th>
+              <th style="width:12%" class="text-center">Costo Mensual<br>Propuesto</th>
+              <th style="width:12%" class="text-center">Variación<br>vs. Circular</th>
+            </tr>
+          </thead>
+          <tbody id="simBodyBuc"></tbody>
+          <tfoot id="simFootBuc"></tfoot>
+        </table>
+        <div class="row g-2 mt-1">
+          <div class="col-md-5">
+            <label class="form-label mb-1" style="font-size:0.8rem;"><strong>Meses por semestre (nueva tipología)</strong></label>
+            <div class="input-group input-group-sm">
+              <input type="number" class="form-control" id="mesesBuc" value="4" min="1" max="12" onchange="recalcAll('buc')">
+              <span class="input-group-text">meses</span>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="alert alert-info py-1 px-2 mb-0" style="font-size:0.78rem;">
+              <strong>Prest. %:</strong> Editable por fila en ambas tablas. TC=52%, MT=46%, HC=35%.
+            </div>
+          </div>
+        </div>
+        <p class="footnote mt-2">* Salarios: promedio real 2026A por tipo/perfil.</p>
+      </div>
+      <div class="col-lg-3">
+        <div class="nomina-panel" style="position:sticky;top:8px;">
+          <div style="font-size:0.85rem;font-weight:800;">⚖️ COMPARATIVO · BUCARAMANGA</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-circ">📋 Circular Anterior</div>
+          <div class="nlabel mt-1">Nómina mensual</div>
+          <div class="nval" id="nomCircBuc">—</div>
+          <div class="nlabel mt-1">Costo semestral</div>
+          <div class="nval" id="nomSemCircBuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">Con prestacional</div>
+          <div class="nval" id="nomPrestCircBuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">N° profesores</div>
+          <div class="nval" id="totalCircBuc" style="font-size:1rem;">—</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-nueva">🆕 Nueva Tipología</div>
+          <div class="nlabel mt-1">Nómina mensual</div>
+          <div class="nval" id="nomPropBuc">—</div>
+          <div class="nlabel mt-1">Costo semestral</div>
+          <div class="nval" id="nomSemBuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">Con prestacional</div>
+          <div class="nval" id="nomPrestBuc" style="font-size:1rem;">—</div>
+          <div class="nlabel mt-1">N° profesores</div>
+          <div class="nval" id="totalProfBuc" style="font-size:1rem;">—</div>
+          <hr style="border-color:rgba(255,255,255,0.2);margin:8px 0;">
+          <div class="sec-label-delta">DIFERENCIA (nueva − circular)</div>
+          <div class="nlabel mt-1">Δ mensual</div>
+          <div class="nval" id="nomDeltaBuc">—</div>
+          <div class="nlabel mt-1" id="nomDeltaPctBuc" style="font-size:0.78rem;"></div>
+          <div class="nlabel mt-1">Δ semestral c/prest.</div>
+          <div class="nval" id="nomDeltaPrestBuc" style="font-size:1rem;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- fin sec-simulador -->
+
+<!-- =====================================================================
+     SECCIÓN 4: INFORME COMPARATIVO
+     ===================================================================== -->
+<div id="sec-informe" class="section-content">
+  <div class="section-title">Informe Comparativo — Tipología Circular Anterior vs. Nueva Tipología 2026</div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3" id="reportActions">
+    <div style="font-size:0.82rem;color:#6c757d;">
+      Generado automáticamente con los ajustes de la Sección 3 ·
+      <span id="reportFecha" class="fw-bold text-primary"></span>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-primary" onclick="updateReport()">↺ Actualizar informe</button>
+      <button class="btn btn-sm btn-outline-dark" onclick="window.print()">🖨 Imprimir / PDF</button>
+    </div>
+  </div>
+
+  <!-- RESUMEN CONSOLIDADO -->
+  <div class="section-title" style="font-size:0.95rem;margin-bottom:8px;">Resumen Consolidado — 3 Campus UDES</div>
+  <div class="table-responsive mb-4">
+    <table class="table table-sm table-bordered report-resumen-table" id="reportResumen">
+      <thead>
+        <tr>
+          <th>Campus</th>
+          <th class="text-center">N° Profs<br>Circular</th>
+          <th class="text-center">N° Profs<br>Nueva</th>
+          <th class="text-center" style="background:#856404;">Nómina Mensual<br>Circular</th>
+          <th class="text-center" style="background:#2a5298;">Nómina Mensual<br>Nueva Tipología</th>
+          <th class="text-center">Δ Mensual</th>
+          <th class="text-center" style="background:#856404;">Costo Sem. c/Prest.<br>Circular</th>
+          <th class="text-center" style="background:#2a5298;">Costo Sem. c/Prest.<br>Nueva Tipología</th>
+          <th class="text-center">Δ Semestral c/Prest.</th>
+          <th class="text-center">Δ %</th>
+        </tr>
+      </thead>
+      <tbody id="reportResumenBody"></tbody>
+    </table>
+  </div>
+
+  <!-- DETALLE POR CAMPUS -->
+  <div id="reportVll"></div>
+  <div id="reportCuc"></div>
+  <div id="reportBuc"></div>
+
+</div><!-- fin sec-informe -->
+
+</div><!-- container -->
+
+<!-- FOOTER -->
+<div style="background:var(--udes-blue);color:rgba(255,255,255,0.6);font-size:0.73rem;padding:10px 24px;margin-top:20px;">
+  Universidad de Santander – UDES · Vicerrectoría Administrativa y Financiera · Documento de uso interno · Período 2026A · Generado con datos reales del sistema Máster Web
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ============================================================
+// DATOS EMBEBIDOS — Fuente: INFORME CAMPUS 2026A + Circulares
+// ============================================================
+const DATA = {
+  vll: {
+    name: 'Valledupar',
+    perfiles: [
+      { id:'lcatedra', label:'📚 Líder en Cátedra TC',           clase:'perfil-lcatedra', count:88,  salary:3600000, prest:52, fixed:false },
+      { id:'misional', label:'🔬 Misional TC',                   clase:'perfil-misional', count:43,  salary:3772000, prest:52, fixed:false },
+      { id:'invext',   label:'🧪 Investigador/Extensionista TC', clase:'perfil-invext',   count:13,  salary:3850000, prest:52, fixed:false },
+      { id:'linv',     label:'🏆 Líder en Investigación TC',     clase:'perfil-linv',     count:0,   salary:4200000, prest:52, fixed:false },
+      { id:'ladm',     label:'🏛 Líder Administrativo',          clase:'perfil-ladm',     count:17,  salary:3772000, prest:52, fixed:false },
+      { id:'mt',       label:'⏱ Medio Tiempo (MT)',              clase:'perfil-mt',       count:74,  salary:2050000, prest:46, fixed:false },
+      { id:'hc',       label:'🎓 Hora Cátedra / Instructores',   clase:'perfil-hc',       count:14,  salary:1878000, prest:35, fixed:false },
+      { id:'pracmt',   label:'🏥 Prácticas Clínicas MT',         clase:'perfil-prac',     count:31,  salary:2500000, prest:46, fixed:false },
+      { id:'practc',   label:'🏥 Prácticas Clínicas TC',         clase:'perfil-prac',     count:14,  salary:4800000, prest:52, fixed:false },
+      { id:'otros',    label:'🏢 Bienestar y Otros',             clase:'perfil-otros',    count:17,  salary:2500000, prest:50, fixed:false },
+    ]
+  },
+  cuc: {
+    name: 'Cúcuta',
+    perfiles: [
+      { id:'lcatedra', label:'📚 Líder en Cátedra TC',           clase:'perfil-lcatedra', count:76,  salary:3650000, prest:52, fixed:false },
+      { id:'misional', label:'🔬 Misional TC',                   clase:'perfil-misional', count:46,  salary:3843000, prest:52, fixed:false },
+      { id:'invext',   label:'🧪 Investigador/Extensionista TC', clase:'perfil-invext',   count:18,  salary:3950000, prest:52, fixed:false },
+      { id:'linv',     label:'🏆 Líder en Investigación TC',     clase:'perfil-linv',     count:2,   salary:6306000, prest:52, fixed:false },
+      { id:'ladm',     label:'🏛 Líder Administrativo',          clase:'perfil-ladm',     count:16,  salary:3843000, prest:52, fixed:false },
+      { id:'mt',       label:'⏱ Medio Tiempo (MT)',              clase:'perfil-mt',       count:66,  salary:2100000, prest:46, fixed:false },
+      { id:'hc',       label:'🎓 Hora Cátedra / Instructores',   clase:'perfil-hc',       count:35,  salary:1878000, prest:35, fixed:false },
+      { id:'pracmt',   label:'🏥 Prácticas Clínicas MT',         clase:'perfil-prac',     count:70,  salary:2200000, prest:46, fixed:false },
+      { id:'practc',   label:'🏥 Prácticas Clínicas TC',         clase:'perfil-prac',     count:14,  salary:4200000, prest:52, fixed:false },
+      { id:'otros',    label:'🏢 Bienestar y Otros',             clase:'perfil-otros',    count:13,  salary:2300000, prest:50, fixed:false },
+    ]
+  },
+  buc: {
+    name: 'Bucaramanga',
+    perfiles: [
+      { id:'lcatedra', label:'📚 Líder en Cátedra TC',           clase:'perfil-lcatedra', count:120, salary:3700000, prest:52, fixed:false },
+      { id:'misional', label:'🔬 Misional TC',                   clase:'perfil-misional', count:100, salary:3915000, prest:52, fixed:false },
+      { id:'invext',   label:'🧪 Investigador/Extensionista TC', clase:'perfil-invext',   count:60,  salary:4300000, prest:52, fixed:false },
+      { id:'linv',     label:'🏆 Líder en Investigación TC',     clase:'perfil-linv',     count:10,  salary:6306000, prest:52, fixed:false },
+      { id:'ladm',     label:'🏛 Líder Administrativo',          clase:'perfil-ladm',     count:36,  salary:4000000, prest:52, fixed:false },
+      { id:'mt',       label:'⏱ Medio Tiempo (MT)',              clase:'perfil-mt',       count:155, salary:2200000, prest:46, fixed:false },
+      { id:'hc',       label:'🎓 Hora Cátedra / Instructores',   clase:'perfil-hc',       count:36,  salary:1878000, prest:35, fixed:false },
+      { id:'pracmt',   label:'🏥 Prácticas Clínicas MT',         clase:'perfil-prac',     count:59,  salary:3223000, prest:46, fixed:false },
+      { id:'practc',   label:'🏥 Prácticas Clínicas TC',         clase:'perfil-prac',     count:30,  salary:6447000, prest:52, fixed:false },
+      { id:'otros',    label:'🏢 Bienestar y Otros',             clase:'perfil-otros',    count:50,  salary:2800000, prest:50, fixed:false },
+    ]
+  }
+};
+
+// Estado actual del simulador — nueva tipología (modificable)
+const STATE = {
+  vll: JSON.parse(JSON.stringify(DATA.vll.perfiles)),
+  cuc: JSON.parse(JSON.stringify(DATA.cuc.perfiles)),
+  buc: JSON.parse(JSON.stringify(DATA.buc.perfiles))
+};
+
+// Datos base circular anterior (PLI-006-BUC) — tipología vigente con salarios estimados
+const CIRC_DATA = {
+  vll: [
+    { label:'PTC Tiempo Completo',         count:141, salary:3700000, prest:52 },
+    { label:'PMT Medio Tiempo',            count:73,  salary:2050000, prest:46 },
+    { label:'PPTC Planta Tiempo Completo', count:3,   salary:3900000, prest:52 },
+    { label:'PPMT Planta Medio Tiempo',    count:1,   salary:2050000, prest:46 },
+    { label:'Comisión Administrativa',     count:17,  salary:3772000, prest:52 },
+    { label:'Prácticas Salud MT',          count:31,  salary:2500000, prest:46 },
+    { label:'Prácticas Salud TC',          count:14,  salary:4800000, prest:52 },
+    { label:'Bienestar / Idiomas / Inf.',  count:26,  salary:2500000, prest:50 },
+    { label:'Profesor Cátedra',            count:5,   salary:1878000, prest:35 },
+  ],
+  cuc: [
+    { label:'PTC Tiempo Completo',           count:132, salary:3750000, prest:52 },
+    { label:'PMT Medio Tiempo',              count:66,  salary:2100000, prest:46 },
+    { label:'PPTC Planta Tiempo Completo',   count:10,  salary:3950000, prest:52 },
+    { label:'PTCVE Vinculación Especial',    count:2,   salary:6306000, prest:52 },
+    { label:'Comisión Administrativa',       count:16,  salary:3843000, prest:52 },
+    { label:'Prácticas Salud MT',            count:70,  salary:2200000, prest:46 },
+    { label:'Prácticas Salud TC',            count:14,  salary:4200000, prest:52 },
+    { label:'Bienestar / Idiomas / Conv.',   count:29,  salary:2300000, prest:50 },
+    { label:'Profesor Cátedra',              count:17,  salary:1878000, prest:35 },
+  ],
+  buc: [
+    { label:'PTC Tiempo Completo',           count:239, salary:3800000, prest:52 },
+    { label:'PMT Medio Tiempo',              count:149, salary:2200000, prest:46 },
+    { label:'PPTC Planta Tiempo Completo',   count:61,  salary:4200000, prest:52 },
+    { label:'PPMT Planta Medio Tiempo',      count:6,   salary:2200000, prest:46 },
+    { label:'PTCVE Vinculación Especial',    count:10,  salary:6306000, prest:52 },
+    { label:'Comisión Administrativa',       count:36,  salary:4000000, prest:52 },
+    { label:'Prácticas Salud MT',            count:42,  salary:3223000, prest:46 },
+    { label:'Prácticas Salud TC',            count:30,  salary:6447000, prest:52 },
+    { label:'Bienestar / Idiomas / Inf.',    count:54,  salary:2800000, prest:50 },
+    { label:'Convenio Docencia Servicio',    count:17,  salary:2500000, prest:50 },
+    { label:'Profesor Cátedra',              count:11,  salary:1878000, prest:35 },
+    { label:'Otros (CPS)',                   count:1,   salary:2000000, prest:50 },
+  ]
+};
+
+// Estado circular anterior (modificable)
+const CIRC_STATE = {
+  vll: JSON.parse(JSON.stringify(CIRC_DATA.vll)),
+  cuc: JSON.parse(JSON.stringify(CIRC_DATA.cuc)),
+  buc: JSON.parse(JSON.stringify(CIRC_DATA.buc))
+};
+
+// ============================================================
+// NAVEGACIÓN PRINCIPAL
+// ============================================================
+function showSection(id, el) {
+  document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.main-nav .nav-link').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+function showCampusTab(section, campus, el) {
+  const prefix = section + '-';
+  document.querySelectorAll('[id^="' + prefix + '"]').forEach(p => {
+    if (p.classList.contains('campus-panel')) p.style.display = 'none';
+  });
+  const panel = document.getElementById(prefix + campus);
+  if (panel) panel.style.display = 'block';
+  const tabs = el.closest('ul').querySelectorAll('.nav-link');
+  tabs.forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ============================================================
+// FORMATEO
+// ============================================================
+function cop(n) {
+  if (isNaN(n)) return '—';
+  return '$' + Math.round(n).toLocaleString('es-CO');
+}
+function copM(n) {
+  if (isNaN(n) || n === 0) return '$0';
+  if (Math.abs(n) >= 1e9) return '$' + (n/1e9).toFixed(2) + ' B';
+  if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(1) + ' M';
+  return cop(n);
+}
+
+// ============================================================
+// SIMULADOR
+// ============================================================
+function buildSimulator(campus) {
+  const perfiles = STATE[campus];
+  const tbody = document.getElementById('simBody' + campus.charAt(0).toUpperCase() + campus.slice(1));
+  tbody.innerHTML = '';
+
+  perfiles.forEach((p, idx) => {
+    const actualCost = DATA[campus].perfiles[idx].count * DATA[campus].perfiles[idx].salary;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><span class="perfil-badge ${p.clase}">${p.label}</span></td>
+      <td class="text-center fw-bold text-secondary">${DATA[campus].perfiles[idx].count}</td>
+      <td>
+        <input type="range" min="0" max="${Math.max(400, DATA[campus].perfiles[idx].count * 3)}"
+          value="${p.count}" id="sl_${campus}_${idx}"
+          oninput="syncInput('${campus}', ${idx}, this.value)">
+      </td>
+      <td class="text-center">
+        <input type="number" class="form-control form-control-sm p-1" min="0"
+          value="${p.count}" id="ni_${campus}_${idx}"
+          onchange="syncSlider('${campus}', ${idx}, this.value)">
+      </td>
+      <td>
+        <input type="number" class="form-control form-control-sm p-1" min="0" step="10000"
+          value="${p.salary}" id="sal_${campus}_${idx}"
+          onchange="updateSalary('${campus}', ${idx}, this.value)">
+      </td>
+      <td class="text-center">
+        <input type="number" class="form-control form-control-sm p-1" min="0" max="100" style="width:60px;"
+          value="${p.prest}" id="pr_${campus}_${idx}"
+          onchange="updatePrest('${campus}', ${idx}, this.value)">
+      </td>
+      <td class="text-center fw-bold" id="cost_${campus}_${idx}">${cop(p.count * p.salary)}</td>
+      <td class="text-center" id="var_${campus}_${idx}">${variacionCell(p.count * p.salary, actualCost)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  recalcAll(campus);
+}
+
+function variacionCell(prop, actual) {
+  const delta = prop - actual;
+  if (Math.abs(delta) < 1000) return '<span class="text-muted">—</span>';
+  const pct = ((delta / actual) * 100).toFixed(1);
+  const cls = delta > 0 ? 'text-danger' : 'text-success';
+  const sign = delta > 0 ? '+' : '';
+  return `<span class="${cls}">${sign}${copM(delta)}<br><small>${sign}${pct}%</small></span>`;
+}
+
+function syncInput(campus, idx, val) {
+  const n = parseInt(val) || 0;
+  STATE[campus][idx].count = n;
+  document.getElementById('ni_' + campus + '_' + idx).value = n;
+  updateRow(campus, idx);
+}
+
+function syncSlider(campus, idx, val) {
+  const n = parseInt(val) || 0;
+  STATE[campus][idx].count = n;
+  document.getElementById('sl_' + campus + '_' + idx).value = n;
+  updateRow(campus, idx);
+}
+
+function updateSalary(campus, idx, val) {
+  const s = parseFloat(val) || 0;
+  STATE[campus][idx].salary = s;
+  updateRow(campus, idx);
+}
+
+function updatePrest(campus, idx, val) {
+  const p = parseFloat(val) || 0;
+  STATE[campus][idx].prest = p;
+  recalcAll(campus);
+}
+
+function updateRow(campus, idx) {
+  const p = STATE[campus][idx];
+  const actualCost = DATA[campus].perfiles[idx].count * DATA[campus].perfiles[idx].salary;
+  const propCost = p.count * p.salary;
+  const Cap = campus.charAt(0).toUpperCase() + campus.slice(1);
+  document.getElementById('cost_' + campus + '_' + idx).textContent = cop(propCost);
+  document.getElementById('var_' + campus + '_' + idx).innerHTML = variacionCell(propCost, actualCost);
+  recalcAll(campus);
+}
+
+function recalcAll(campus) {
+  const Cap = campus.charAt(0).toUpperCase() + campus.slice(1);
+
+  // === CIRCULAR ANTERIOR ===
+  const circPerfiles = CIRC_STATE[campus];
+  const nomCirc = circPerfiles.reduce((s, p) => s + p.count * p.salary, 0);
+  const totalCirc = circPerfiles.reduce((s, p) => s + p.count, 0);
+  const mesesCirc = parseInt(document.getElementById('mesesCirc' + Cap).value) || 4;
+  const nomSemCirc = nomCirc * mesesCirc;
+  const nomPrestCirc = circPerfiles.reduce((s, p) => s + p.count * p.salary * (1 + p.prest / 100), 0) * mesesCirc;
+
+  const nomCircPrestMes = circPerfiles.reduce((s, p) => s + p.count * p.salary * (1 + p.prest / 100), 0);
+  // Actualizar footer circular
+  const cfooter = document.getElementById('circFoot' + Cap);
+  cfooter.innerHTML = `<tr style="background:#856404;color:#fff;">
+    <td><strong>TOTAL CAMPUS</strong></td>
+    <td></td>
+    <td class="text-center fw-bold">${totalCirc}</td>
+    <td></td><td></td>
+    <td class="text-center fw-bold">${cop(nomCirc)}/mes</td>
+    <td class="text-center fw-bold">${cop(nomCircPrestMes)}/mes</td>
+  </tr>`;
+
+  document.getElementById('nomCirc' + Cap).textContent = copM(nomCirc);
+  document.getElementById('nomSemCirc' + Cap).textContent = copM(nomSemCirc);
+  document.getElementById('nomPrestCirc' + Cap).textContent = copM(nomPrestCirc);
+  document.getElementById('totalCirc' + Cap).textContent = totalCirc;
+
+  // === NUEVA TIPOLOGÍA ===
+  const perfiles = STATE[campus];
+  const nomProp = perfiles.reduce((s, p) => s + p.count * p.salary, 0);
+  const totalProf = perfiles.reduce((s, p) => s + p.count, 0);
+  const meses = parseInt(document.getElementById('meses' + Cap).value) || 4;
+  const nomSem = nomProp * meses;
+  const nomPrestVal = perfiles.reduce((s, p) => s + p.count * p.salary * (1 + p.prest / 100), 0) * meses;
+
+  document.getElementById('nomProp' + Cap).textContent = copM(nomProp);
+  document.getElementById('nomSem' + Cap).textContent = copM(nomSem);
+  document.getElementById('nomPrest' + Cap).textContent = copM(nomPrestVal);
+  document.getElementById('totalProf' + Cap).textContent = totalProf;
+
+  // Actualizar footer nueva tipología
+  const tfoot = document.getElementById('simFoot' + Cap);
+  tfoot.innerHTML = `<tr class="table-dark">
+    <td colspan="3"><strong>TOTAL CAMPUS ${DATA[campus].name.toUpperCase()}</strong></td>
+    <td class="text-center fw-bold">${totalProf}</td>
+    <td></td><td></td>
+    <td class="text-center fw-bold">${cop(nomProp)}/mes</td>
+    <td class="text-center">${variacionCell(nomProp, nomCirc)}</td>
+  </tr>`;
+
+  // === DIFERENCIA (nueva − circular) ===
+  const delta = nomProp - nomCirc;
+  const deltaPct = nomCirc > 0 ? ((delta / nomCirc) * 100).toFixed(1) : 0;
+  const deltaPrest = nomPrestVal - nomPrestCirc;
+  const sign = delta >= 0 ? '+' : '';
+
+  const deltaEl = document.getElementById('nomDelta' + Cap);
+  const deltaPctEl = document.getElementById('nomDeltaPct' + Cap);
+  deltaEl.className = 'nval ' + (delta > 0 ? 'delta-pos' : 'delta-neg');
+  deltaEl.textContent = sign + copM(delta);
+  deltaPctEl.textContent = sign + deltaPct + '% vs. circular';
+
+  const deltaPrestEl = document.getElementById('nomDeltaPrest' + Cap);
+  deltaPrestEl.className = 'nval ' + (deltaPrest > 0 ? 'delta-pos' : 'delta-neg');
+  const signP = deltaPrest >= 0 ? '+' : '';
+  deltaPrestEl.textContent = signP + copM(deltaPrest);
+}
+
+function resetSimulator(campus) {
+  STATE[campus] = JSON.parse(JSON.stringify(DATA[campus].perfiles));
+  buildSimulator(campus);
+}
+
+function resetCircular(campus) {
+  CIRC_STATE[campus] = JSON.parse(JSON.stringify(CIRC_DATA[campus]));
+  buildCircular(campus);
+}
+
+// ============================================================
+// TABLA CIRCULAR ANTERIOR
+// ============================================================
+function buildCircular(campus) {
+  const Cap = campus.charAt(0).toUpperCase() + campus.slice(1);
+  const tbody = document.getElementById('circBody' + Cap);
+  tbody.innerHTML = '';
+
+  CIRC_STATE[campus].forEach((p, idx) => {
+    const row = document.createElement('tr');
+    const cost = p.count * p.salary;
+    const costPrest = cost * (1 + p.prest / 100);
+    row.innerHTML = `
+      <td style="font-size:0.82rem;font-weight:600;">${p.label}</td>
+      <td>
+        <input type="range" min="0" max="${Math.max(400, CIRC_DATA[campus][idx].count * 3)}"
+          value="${p.count}" id="csl_${campus}_${idx}"
+          oninput="syncCircInput('${campus}', ${idx}, this.value)">
+      </td>
+      <td class="text-center">
+        <input type="number" class="form-control form-control-sm p-1" min="0"
+          value="${p.count}" id="cni_${campus}_${idx}"
+          onchange="syncCircSlider('${campus}', ${idx}, this.value)">
+      </td>
+      <td>
+        <input type="number" class="form-control form-control-sm p-1" min="0" step="10000"
+          value="${p.salary}" id="csal_${campus}_${idx}"
+          onchange="updateCircSalary('${campus}', ${idx}, this.value)">
+      </td>
+      <td class="text-center">
+        <input type="number" class="form-control form-control-sm p-1" min="0" max="100" style="width:60px;"
+          value="${p.prest}" id="cpr_${campus}_${idx}"
+          onchange="updateCircPrest('${campus}', ${idx}, this.value)">
+      </td>
+      <td class="text-center fw-bold" id="ccost_${campus}_${idx}">${cop(cost)}</td>
+      <td class="text-center" id="ccostp_${campus}_${idx}">${cop(costPrest)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+  recalcAll(campus);
+}
+
+function syncCircInput(campus, idx, val) {
+  const n = parseInt(val) || 0;
+  CIRC_STATE[campus][idx].count = n;
+  document.getElementById('cni_' + campus + '_' + idx).value = n;
+  updateCircRow(campus, idx);
+}
+
+function syncCircSlider(campus, idx, val) {
+  const n = parseInt(val) || 0;
+  CIRC_STATE[campus][idx].count = n;
+  document.getElementById('csl_' + campus + '_' + idx).value = n;
+  updateCircRow(campus, idx);
+}
+
+function updateCircSalary(campus, idx, val) {
+  CIRC_STATE[campus][idx].salary = parseFloat(val) || 0;
+  updateCircRow(campus, idx);
+}
+
+function updateCircPrest(campus, idx, val) {
+  CIRC_STATE[campus][idx].prest = parseFloat(val) || 0;
+  recalcAll(campus);
+}
+
+function updateCircRow(campus, idx) {
+  const p = CIRC_STATE[campus][idx];
+  const cost = p.count * p.salary;
+  const costPrest = cost * (1 + p.prest / 100);
+  const Cap = campus.charAt(0).toUpperCase() + campus.slice(1);
+  document.getElementById('ccost_' + campus + '_' + idx).textContent = cop(cost);
+  document.getElementById('ccostp_' + campus + '_' + idx).textContent = cop(costPrest);
+  recalcAll(campus);
+}
+
+function saveScenario(campus) {
+  const data = {
+    campus: DATA[campus].name,
+    fecha: new Date().toISOString().split('T')[0],
+    perfiles: STATE[campus].map(p => ({ perfil: p.label, cantidad: p.count, salario: p.salary, costo_mensual: p.count * p.salary })),
+    total_mensual: STATE[campus].reduce((s,p) => s + p.count * p.salary, 0)
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'escenario_' + campus + '_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+}
+
+// ============================================================
+// GRÁFICOS CHART.JS
+// ============================================================
+const COLORS = {
+  lcatedra: '#6ea8fe', misional: '#75b798', invext: '#ffc107', linv: '#c29ffa',
+  ladm: '#f1aeb5', mt: '#79dbd2', hc: '#adb5bd', pracmt: '#ffb06a', practc: '#ff8c40', otros: '#cccccc',
+  ptc: '#1b3a6b', pmt: '#2a5298', pptc: '#c9a227', ppmt: '#f0c040',
+  ptcve: '#6610f2', cadm: '#dc3545', pracSaludMT: '#fd7e14', pracSaludTC: '#e85d04',
+  bienestar: '#6c757d', pc: '#198754', conv: '#0dcaf0', otroscps: '#999'
+};
+
+// Datos tipología ANTIGUA (Circular PLI-006-BUC) para gráficos de Diagnóstico
+const DIAG_DATA = {
+  vll: [
+    { id:'ptc',          label:'PTC Tiempo Completo',      count:141 },
+    { id:'pmt',          label:'PMT Medio Tiempo',         count:73  },
+    { id:'pptc',         label:'PPTC Planta TC',           count:3   },
+    { id:'ppmt',         label:'PPMT Planta MT',           count:1   },
+    { id:'cadm',         label:'Comisión Administrativa',  count:17  },
+    { id:'pracSaludMT',  label:'Prácticas Salud MT',       count:31  },
+    { id:'pracSaludTC',  label:'Prácticas Salud TC',       count:14  },
+    { id:'bienestar',    label:'Bienestar / Idiomas / Inf.',count:26  },
+    { id:'pc',           label:'Profesor Cátedra',         count:5   },
+  ],
+  cuc: [
+    { id:'ptc',          label:'PTC Tiempo Completo',      count:132 },
+    { id:'pmt',          label:'PMT Medio Tiempo',         count:66  },
+    { id:'pptc',         label:'PPTC Planta TC',           count:10  },
+    { id:'ptcve',        label:'PTCVE Vinculación Especial',count:2  },
+    { id:'cadm',         label:'Comisión Administrativa',  count:16  },
+    { id:'pracSaludMT',  label:'Prácticas Salud MT',       count:70  },
+    { id:'pracSaludTC',  label:'Prácticas Salud TC',       count:14  },
+    { id:'bienestar',    label:'Bienestar / Idiomas / Conv.',count:29 },
+    { id:'pc',           label:'Profesor Cátedra',         count:17  },
+  ],
+  buc: [
+    { id:'ptc',          label:'PTC Tiempo Completo',      count:239 },
+    { id:'pmt',          label:'PMT Medio Tiempo',         count:149 },
+    { id:'pptc',         label:'PPTC Planta TC',           count:61  },
+    { id:'ppmt',         label:'PPMT Planta MT',           count:6   },
+    { id:'ptcve',        label:'PTCVE Vinculación Especial',count:10 },
+    { id:'cadm',         label:'Comisión Administrativa',  count:36  },
+    { id:'pracSaludMT',  label:'Prácticas Salud MT',       count:42  },
+    { id:'pracSaludTC',  label:'Prácticas Salud TC',       count:30  },
+    { id:'bienestar',    label:'Bienestar / Idiomas / Inf.',count:54  },
+    { id:'conv',         label:'Convenio Docencia Servicio',count:17 },
+    { id:'pc',           label:'Profesor Cátedra',         count:11  },
+    { id:'otroscps',     label:'Otros (CPS)',              count:1   },
+  ]
+};
+
+function buildDonutChart(canvasId, perfiles) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: perfiles.map(p => p.label.replace(/[📚🔬🧪🏆🏛⏱🎓🏥🏢]/gu, '').trim()),
+      datasets: [{ data: perfiles.map(p => p.count), backgroundColor: perfiles.map(p => COLORS[p.id] || '#ccc'), borderWidth: 1 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: {
+        legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12, padding: 6 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw / ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` } }
+      }
+    }
+  });
+}
+
+function buildTransDonut(canvasId, campus) {
+  const perfiles = DATA[campus].perfiles;
+  buildDonutChart(canvasId, perfiles);
+}
+
+// ============================================================
+// INFORME COMPARATIVO (SECCIÓN 4)
+// ============================================================
+function calcCampusMetrics(campus) {
+  const Cap = campus.charAt(0).toUpperCase() + campus.slice(1);
+  const circ = CIRC_STATE[campus];
+  const nueva = STATE[campus];
+  const mesesC = parseInt((document.getElementById('mesesCirc' + Cap) || {}).value) || 4;
+  const mesesN = parseInt((document.getElementById('meses' + Cap) || {}).value) || 4;
+
+  const nomCirc    = circ.reduce((s, p) => s + p.count * p.salary, 0);
+  const totalCirc  = circ.reduce((s, p) => s + p.count, 0);
+  const prestCirc  = circ.reduce((s, p) => s + p.count * p.salary * (1 + p.prest / 100), 0) * mesesC;
+
+  const nomNueva   = nueva.reduce((s, p) => s + p.count * p.salary, 0);
+  const totalNueva = nueva.reduce((s, p) => s + p.count, 0);
+  const prestNueva = nueva.reduce((s, p) => s + p.count * p.salary * (1 + p.prest / 100), 0) * mesesN;
+
+  return { nomCirc, totalCirc, prestCirc, nomNueva, totalNueva, prestNueva,
+           deltaM: nomNueva - nomCirc, deltaSem: prestNueva - prestCirc };
+}
+
+function deltaClass(v) { return v > 0 ? 'variacion-pos' : v < 0 ? 'variacion-neg' : 'variacion-neutral'; }
+function deltaSign(v)  { return v > 0 ? '+' : ''; }
+
+function buildCampusReport(campus, nombre) {
+  const Cap   = campus.charAt(0).toUpperCase() + campus.slice(1);
+  const m     = calcCampusMetrics(campus);
+  const circ  = CIRC_STATE[campus];
+  const nueva = STATE[campus];
+  const mesesC = parseInt((document.getElementById('mesesCirc' + Cap) || {}).value) || 4;
+  const mesesN = parseInt((document.getElementById('meses' + Cap) || {}).value) || 4;
+  const pctM   = m.nomCirc > 0 ? ((m.deltaM / m.nomCirc) * 100).toFixed(1) : 0;
+  const pctS   = m.prestCirc > 0 ? ((m.deltaSem / m.prestCirc) * 100).toFixed(1) : 0;
+  const deltaKpiClass = m.deltaM > 0 ? 'aumento' : m.deltaM < 0 ? 'ahorro' : 'ahorro';
+  const deltaLabel    = m.deltaM > 0 ? '↑ Aumento de costo' : m.deltaM < 0 ? '↓ Ahorro' : 'Sin variación';
+
+  // Filas circular
+  const filasCirc = circ.map(p => {
+    const cost = p.count * p.salary;
+    const costPrest = cost * (1 + p.prest / 100) * mesesC;
+    return `<tr>
+      <td>${p.label}</td>
+      <td class="text-center fw-bold">${p.count}</td>
+      <td class="text-end">${cop(p.salary)}</td>
+      <td class="text-center">${p.prest}%</td>
+      <td class="text-end fw-bold">${cop(cost)}</td>
+      <td class="text-end">${cop(costPrest)}</td>
+    </tr>`;
+  }).join('');
+
+  // Filas nueva tipología
+  const filasNueva = nueva.map(p => {
+    const cost = p.count * p.salary;
+    const costPrest = cost * (1 + p.prest / 100) * mesesN;
+    return `<tr>
+      <td><span class="perfil-badge ${p.clase}" style="font-size:0.72rem;">${p.label}</span></td>
+      <td class="text-center fw-bold">${p.count}</td>
+      <td class="text-end">${cop(p.salary)}</td>
+      <td class="text-center">${p.prest}%</td>
+      <td class="text-end fw-bold">${cop(cost)}</td>
+      <td class="text-end">${cop(costPrest)}</td>
+    </tr>`;
+  }).join('');
+
+  const sharedHead = `<thead class="report-detail-table">
+    <tr>
+      <th style="width:32%">Tipo / Perfil</th>
+      <th class="text-center" style="width:8%">N°</th>
+      <th class="text-end" style="width:16%">Salario/mes</th>
+      <th class="text-center" style="width:8%">Prest.</th>
+      <th class="text-end" style="width:18%">Costo mensual</th>
+      <th class="text-end" style="width:18%">Costo sem. c/prest.</th>
+    </tr>
+  </thead>`;
+
+  return `
+  <div class="report-campus-card">
+    <div class="report-campus-header">
+      📍 Campus ${nombre}
+      <small style="opacity:0.75;font-weight:400;margin-left:8px;">
+        Circular: ${mesesC} meses/sem · Nueva tipología: ${mesesN} meses/sem
+      </small>
+    </div>
+    <div class="p-3">
+      <!-- KPIs comparativos -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="report-kpi-circ">
+            <div class="report-kpi-title">📋 Circular anterior</div>
+            <div class="report-kpi-value">${copM(m.nomCirc)}<small style="font-size:0.6em;">/mes</small></div>
+            <div class="report-kpi-sub">Sem. c/prest.: <strong>${copM(m.prestCirc)}</strong></div>
+            <div class="report-kpi-sub">N° profesores: <strong>${m.totalCirc}</strong></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="report-kpi-nueva">
+            <div class="report-kpi-title">🆕 Nueva tipología 2026</div>
+            <div class="report-kpi-value">${copM(m.nomNueva)}<small style="font-size:0.6em;">/mes</small></div>
+            <div class="report-kpi-sub">Sem. c/prest.: <strong>${copM(m.prestNueva)}</strong></div>
+            <div class="report-kpi-sub">N° profesores: <strong>${m.totalNueva}</strong></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="report-kpi-delta ${deltaKpiClass}">
+            <div class="report-kpi-title">⚖️ ${deltaLabel}</div>
+            <div class="report-kpi-value ${deltaClass(m.deltaM)}" style="font-size:1.2rem;">
+              ${deltaSign(m.deltaM)}${copM(m.deltaM)}<small style="font-size:0.6em;">/mes</small>
+            </div>
+            <div class="report-kpi-sub">Δ sem. c/prest.: <strong class="${deltaClass(m.deltaSem)}">${deltaSign(m.deltaSem)}${copM(m.deltaSem)}</strong></div>
+            <div class="report-kpi-sub">Δ %: <strong class="${deltaClass(m.deltaM)}">${deltaSign(m.deltaM)}${pctM}% mensual · ${deltaSign(m.deltaSem)}${pctS}% semestral</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalle tablas -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div style="font-size:0.8rem;font-weight:700;color:#856404;margin-bottom:4px;">📋 Detalle Circular Anterior</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered report-detail-table mb-0">
+              ${sharedHead}
+              <tbody>
+                ${filasCirc}
+                <tr style="background:#fff8e1;font-weight:700;">
+                  <td>TOTAL</td>
+                  <td class="text-center">${m.totalCirc}</td>
+                  <td></td><td></td>
+                  <td class="text-end">${cop(m.nomCirc)}</td>
+                  <td class="text-end">${cop(m.prestCirc)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:4px;">🆕 Detalle Nueva Tipología 2026</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered report-detail-table mb-0">
+              ${sharedHead}
+              <tbody>
+                ${filasNueva}
+                <tr style="background:#e8f4fd;font-weight:700;">
+                  <td>TOTAL</td>
+                  <td class="text-center">${m.totalNueva}</td>
+                  <td></td><td></td>
+                  <td class="text-end">${cop(m.nomNueva)}</td>
+                  <td class="text-end">${cop(m.prestNueva)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateReport() {
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' }) +
+                ' · ' + now.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+  const fechaEl = document.getElementById('reportFecha');
+  if (fechaEl) fechaEl.textContent = fecha;
+
+  // Detalle por campus
+  const campuses = [
+    { id:'vll', nombre:'Valledupar' },
+    { id:'cuc', nombre:'Cúcuta'    },
+    { id:'buc', nombre:'Bucaramanga' }
+  ];
+
+  campuses.forEach(c => {
+    const el = document.getElementById('report' + c.id.charAt(0).toUpperCase() + c.id.slice(1));
+    if (el) el.innerHTML = buildCampusReport(c.id, c.nombre);
+  });
+
+  // Resumen consolidado
+  let totalCircM = 0, totalNuevaM = 0, totalCircS = 0, totalNuevaS = 0,
+      totalCircN = 0, totalNuevaN = 0;
+
+  const tbody = document.getElementById('reportResumenBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  campuses.forEach(c => {
+    const m = calcCampusMetrics(c.id);
+    totalCircM  += m.nomCirc;   totalNuevaM  += m.nomNueva;
+    totalCircS  += m.prestCirc; totalNuevaS  += m.prestNueva;
+    totalCircN  += m.totalCirc; totalNuevaN  += m.totalNueva;
+
+    const pctM = m.nomCirc > 0 ? ((m.deltaM / m.nomCirc) * 100).toFixed(1) : 0;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="fw-bold">📍 ${c.nombre}</td>
+      <td class="text-center">${m.totalCirc}</td>
+      <td class="text-center">${m.totalNueva}</td>
+      <td class="text-end" style="color:#856404;font-weight:600;">${cop(m.nomCirc)}</td>
+      <td class="text-end" style="color:var(--udes-blue);font-weight:600;">${cop(m.nomNueva)}</td>
+      <td class="text-end ${deltaClass(m.deltaM)}">${deltaSign(m.deltaM)}${cop(m.deltaM)}</td>
+      <td class="text-end" style="color:#856404;font-weight:600;">${cop(m.prestCirc)}</td>
+      <td class="text-end" style="color:var(--udes-blue);font-weight:600;">${cop(m.prestNueva)}</td>
+      <td class="text-end ${deltaClass(m.deltaSem)}">${deltaSign(m.deltaSem)}${cop(m.deltaSem)}</td>
+      <td class="text-center ${deltaClass(m.deltaM)}">${deltaSign(m.deltaM)}${pctM}%</td>`;
+    tbody.appendChild(row);
+  });
+
+  // Fila total
+  const deltaTotal  = totalNuevaM - totalCircM;
+  const deltaTotalS = totalNuevaS - totalCircS;
+  const pctTotal    = totalCircM > 0 ? ((deltaTotal / totalCircM) * 100).toFixed(1) : 0;
+  const tr = document.createElement('tr');
+  tr.className = 'report-total-row';
+  tr.innerHTML = `
+    <td class="fw-bold">🏛 TOTAL UDES (3 campus)</td>
+    <td class="text-center fw-bold">${totalCircN}</td>
+    <td class="text-center fw-bold">${totalNuevaN}</td>
+    <td class="text-end fw-bold" style="color:#856404;">${cop(totalCircM)}</td>
+    <td class="text-end fw-bold" style="color:var(--udes-blue);">${cop(totalNuevaM)}</td>
+    <td class="text-end fw-bold ${deltaClass(deltaTotal)}">${deltaSign(deltaTotal)}${cop(deltaTotal)}</td>
+    <td class="text-end fw-bold" style="color:#856404;">${cop(totalCircS)}</td>
+    <td class="text-end fw-bold" style="color:var(--udes-blue);">${cop(totalNuevaS)}</td>
+    <td class="text-end fw-bold ${deltaClass(deltaTotalS)}">${deltaSign(deltaTotalS)}${cop(deltaTotalS)}</td>
+    <td class="text-center fw-bold ${deltaClass(deltaTotal)}">${deltaSign(deltaTotal)}${pctTotal}%</td>`;
+  tbody.appendChild(tr);
+}
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  // Gráficos diagnóstico — tipología ANTIGUA (PTC, PMT, PPTC, etc.)
+  buildDonutChart('chartDiagVll', DIAG_DATA.vll);
+  buildDonutChart('chartDiagCuc', DIAG_DATA.cuc);
+  buildDonutChart('chartDiagBuc', DIAG_DATA.buc);
+  // Gráficos transición — nueva tipología funcional (Líder Cátedra, Misional, etc.)
+  buildDonutChart('chartTransVll', DATA.vll.perfiles);
+  buildDonutChart('chartTransCuc', DATA.cuc.perfiles);
+  buildDonutChart('chartTransBuc', DATA.buc.perfiles);
+  // Inicializar simuladores (circular anterior + nueva tipología)
+  ['vll', 'cuc', 'buc'].forEach(c => {
+    buildCircular(c);
+    buildSimulator(c);
+  });
+});
+</script>
+</body>
+</html>
