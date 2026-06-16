@@ -2398,7 +2398,46 @@ function buildProgramReport(campus, prog) {
     </tr>
   </thead>`;
 
+  const campusNombre = { vll:'Valledupar', cuc:'Cúcuta', buc:'Bucaramanga' }[campus];
+  const deltaPctNum = parseFloat(deltaPct);
+  const deltaClass2 = deltaM > 0 ? 'variacion-pos' : deltaM < 0 ? 'variacion-neg' : 'variacion-neutral';
+
   return `
+  <!-- Tabla Resumen (mismo estilo que Tab 4) -->
+  <div class="section-title" style="font-size:0.95rem;margin-bottom:8px;">Resumen — ${prog}</div>
+  <div class="table-responsive mb-4">
+    <table class="table table-sm table-bordered report-resumen-table">
+      <thead>
+        <tr>
+          <th>Campus</th>
+          <th class="text-center">N° Profs<br>Circular</th>
+          <th class="text-center">N° Profs<br>Nueva</th>
+          <th class="text-center" style="background:#856404;">Nómina Mensual<br>Circular</th>
+          <th class="text-center" style="background:#2a5298;">Nómina Mensual<br>Nueva Tipología</th>
+          <th class="text-center">Δ Mensual</th>
+          <th class="text-center" style="background:#856404;">Costo Sem. c/Prest.<br>Circular</th>
+          <th class="text-center" style="background:#2a5298;">Costo Sem. c/Prest.<br>Nueva Tipología</th>
+          <th class="text-center">Δ Semestral c/Prest.</th>
+          <th class="text-center">Δ %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw-bold">📍 ${campusNombre}</td>
+          <td class="text-center">${totalCirc}</td>
+          <td class="text-center">${totalNueva}</td>
+          <td class="text-end" style="color:#856404;font-weight:600;">${cop(costoCircMes)}</td>
+          <td class="text-end" style="color:var(--udes-blue);font-weight:600;">${cop(costoNuevaMes)}</td>
+          <td class="text-end ${deltaClass2}">${signM}${cop(deltaM)}</td>
+          <td class="text-end" style="color:#856404;font-weight:600;">${cop(costoCircSem)}</td>
+          <td class="text-end" style="color:var(--udes-blue);font-weight:600;">${cop(costoNuevaSem)}</td>
+          <td class="text-end ${deltaClass2}">${signS}${cop(deltaSem)}</td>
+          <td class="text-center ${deltaClass2}">${signM}${deltaPct}%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="report-campus-card">
     <div class="report-campus-header">
       📋 Programa: ${prog}
