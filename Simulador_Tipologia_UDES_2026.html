@@ -2020,9 +2020,9 @@ function renderPrograma() {
     </div>
   </div>
 
-  <!-- Circular + Simulador + Gráfica -->
-  <div class="row g-3">
-    <div class="col-lg-3">
+  <!-- Fila 1: Circular (izquierda) + Gráfica (derecha) -->
+  <div class="row g-3 mb-2">
+    <div class="col-md-4">
       <div style="font-size:0.8rem;font-weight:700;color:#856404;margin-bottom:4px;">📋 Circular vigente</div>
       <table class="table table-sm table-bordered" style="font-size:0.8rem;">
         <thead><tr><th>Tipo contrato</th><th class="text-center">N°</th><th class="text-end">$/mes</th></tr></thead>
@@ -2030,33 +2030,35 @@ function renderPrograma() {
         <tfoot><tr style="background:#fff8e1;font-weight:700;"><td>Total</td><td class="text-center">${totalCirc}</td><td class="text-end">${cop(costoCircMes)}</td></tr></tfoot>
       </table>
     </div>
-    <div class="col-lg-5">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);">🆕 Simulador — Nueva Tipología</div>
-        <button class="btn btn-sm btn-reset" onclick="resetProgSimulator()">↺ Restablecer</button>
-      </div>
-      <table class="table table-sm table-bordered simulator-table" id="progSimTable">
-        <thead>
-          <tr>
-            <th style="width:28%">Perfil funcional</th>
-            <th style="width:8%" class="text-center">Base</th>
-            <th style="width:20%">Cantidad</th>
-            <th style="width:7%" class="text-center">N°</th>
-            <th style="width:14%">Sal. $/mes</th>
-            <th style="width:7%" class="text-center">Prest.%</th>
-            <th style="width:10%" class="text-center">$/mes</th>
-            <th style="width:6%" class="text-center">Δ</th>
-          </tr>
-        </thead>
-        <tbody id="progSimBody"></tbody>
-        <tfoot id="progSimFoot"></tfoot>
-      </table>
+    <div class="col-md-8">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:6px;">Comparativo visual: Circular vs. Nueva Tipología</div>
+      <div style="position:relative;height:220px;"><canvas id="chartPrograma"></canvas></div>
+      <div class="footnote mt-1">* PTC/PPTC distribuidos según proporciones del campus. Ajuste sliders para simular escenarios.</div>
     </div>
-    <div class="col-lg-4">
-      <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:6px;">Comparativo visual</div>
-      <div style="position:relative;height:280px;"><canvas id="chartPrograma"></canvas></div>
-      <div class="footnote mt-1">* PTC/PPTC se distribuyen según proporciones del campus. Ajuste libremente para simular escenarios.</div>
-    </div>
+  </div>
+
+  <!-- Fila 2: Simulador nueva tipología (ancho completo, con scroll horizontal) -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);">🆕 Simulador — Nueva Tipología (ajusta cantidades, salarios y prestacional)</div>
+    <button class="btn btn-sm btn-reset" onclick="resetProgSimulator()">↺ Restablecer</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered simulator-table" id="progSimTable" style="min-width:680px;">
+      <thead>
+        <tr>
+          <th style="width:22%">Perfil funcional</th>
+          <th style="width:7%" class="text-center">Base</th>
+          <th style="width:18%">Cantidad <small>(slider)</small></th>
+          <th style="width:6%" class="text-center">N°</th>
+          <th style="width:13%">Sal. $/mes</th>
+          <th style="width:6%" class="text-center">Prest.%</th>
+          <th style="width:11%" class="text-center">Costo mensual</th>
+          <th style="width:11%" class="text-center">Variación vs. circular</th>
+        </tr>
+      </thead>
+      <tbody id="progSimBody"></tbody>
+      <tfoot id="progSimFoot"></tfoot>
+    </table>
   </div>`;
 
   document.getElementById('progContent').innerHTML = html;
