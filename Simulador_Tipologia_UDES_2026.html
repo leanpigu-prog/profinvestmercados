@@ -117,7 +117,7 @@
   </div>
   <div class="text-end">
     <div class="badge-fecha d-inline-block mb-1">Período: 2026A</div>
-    <div style="font-size:0.75rem;opacity:0.7;margin-top:4px;">Generado: 29 Abril 2026</div>
+    <div style="font-size:0.75rem;opacity:0.7;margin-top:4px;">Aprobado por Consejo Académico: 05 Junio 2026</div>
   </div>
 </div>
 
@@ -142,6 +142,11 @@
     <li class="nav-item">
       <a class="nav-link" href="#" onclick="showSection('informe',this); updateReport(); return false;">
         <span class="nav-num">4</span>Informe Comparativo
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="showSection('programa',this); return false;">
+        <span class="nav-num">5</span>Por Programa
       </a>
     </li>
   </ul>
@@ -334,7 +339,7 @@
      SECCIÓN 2: TRANSICIÓN
      ===================================================================== -->
 <div id="sec-transicion" class="section-content">
-  <div class="section-title">Transición: Aplicación de Nueva Tipología Funcional (Borrador V1 — 24 Abril 2026)</div>
+  <div class="section-title">Transición: Aplicación de Nueva Tipología Funcional (Aprobada por Consejo Académico — 05 Junio 2026)</div>
 
   <!-- Tabla de mapeo -->
   <h6 class="fw-bold text-primary mb-2">Reglas de clasificación: Tipología vigente → Nuevos perfiles funcionales</h6>
@@ -349,32 +354,32 @@
       <tr>
         <td>PTC / PPTC</td>
         <td>Doc. directa &gt; 20h/sem sin inv/ext formal</td>
-        <td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra</span></td>
+        <td><span class="perfil-badge perfil-lcatedra">📚 Líder en Enseñanza</span></td>
         <td>22–25h</td><td>0h (o eventual)</td>
       </tr>
       <tr>
         <td>PTC / PPTC</td>
         <td>Doc. directa 18–20h + inv/ext formalizada</td>
         <td><span class="perfil-badge perfil-misional">🔬 Misional</span></td>
-        <td>18–20h</td><td>mín. 6h</td>
+        <td>18–20h</td><td>Min 6h / Máx 12h</td>
       </tr>
       <tr>
         <td>PPTC / PTC con carga investigadora</td>
         <td>Doc. directa 12–16h + inv/ext ≥ 16h/sem</td>
         <td><span class="perfil-badge perfil-invext">🧪 Investigador / Extensionista</span></td>
-        <td>12–16h</td><td>mín. 16h</td>
+        <td>12–16h</td><td>Min 16h / Máx 24h</td>
       </tr>
       <tr>
         <td>PTCVE Investigador</td>
         <td>Doc. ≤ 12h (posgrado) + conv. externa activa</td>
         <td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación</span></td>
-        <td>8–10h (posgrado)</td><td>mín. 25h (ext. obligatoria)</td>
+        <td>Min 8h / Máx 15h (mín 3h pregrado)</td><td>Mín 25h (conv. externa obligatoria)</td>
       </tr>
       <tr>
         <td>Comisión Administrativa</td>
         <td>Director de Programa / Coordinador Depto.</td>
         <td><span class="perfil-badge perfil-ladm">🏛 Líder Administrativo</span></td>
-        <td>6h</td><td>— (dirección 32h)</td>
+        <td>6h <small class="text-muted">(+ 2h formador; prep. clase estricta, NO aplica regla 35%)</small></td><td>32h dirección</td>
       </tr>
       <tr>
         <td>PMT / PPMT</td>
@@ -397,6 +402,69 @@
     </tbody>
   </table>
 
+  <!-- Roles de coordinación (aprobados jun 2026) -->
+  <h6 class="fw-bold text-primary mb-2 mt-4">Roles de Coordinación — Asignación de horas adicionales</h6>
+  <div class="alert alert-info py-2 px-3 mb-3" style="font-size:0.82rem;">
+    Los coordinadores mantienen su perfil funcional base y reciben horas de coordinación adicionales según el rol y el volumen atendido. Las horas de coordinación se suman a las de enseñanza directa.
+  </div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <table class="table table-sm table-bordered mapeo-table">
+        <thead><tr><th colspan="3">🎓 Coordinador/a de Enseñanza</th></tr>
+          <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° estudiantes</th></tr></thead>
+        <tbody>
+          <tr><td>12 h</td><td>—</td><td>60 – 100 estudiantes</td></tr>
+          <tr><td>15 h</td><td>—</td><td>101 – 200 estudiantes</td></tr>
+          <tr><td>20 h</td><td>—</td><td>201 – 300 estudiantes</td></tr>
+          <tr><td>23 h</td><td>—</td><td>&gt; 300 estudiantes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <table class="table table-sm table-bordered mapeo-table">
+        <thead><tr><th colspan="3">🔬 Coordinador/a de Investigación</th></tr>
+          <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° estudiantes</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">12 – 16 h</td><td>Hasta 12 h</td><td>Hasta 2</td></tr>
+          <tr><td>Hasta 16 h</td><td>3 – 5</td></tr>
+          <tr><td>Hasta 20 h</td><td>6 o más</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <table class="table table-sm table-bordered mapeo-table">
+        <thead><tr><th colspan="3">🏥 Coordinador/a de Prácticas</th></tr>
+          <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° estudiantes</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Variable</td><td>5 h</td><td>Menos de 10</td></tr>
+          <tr><td>10 h</td><td>10 – 30</td></tr>
+          <tr><td>18 h</td><td>Más de 31</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <table class="table table-sm table-bordered mapeo-table">
+        <thead><tr><th colspan="3">📋 Coordinador/a de Extensión</th></tr>
+          <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° programas</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="4">12 – 21 h</td><td>Hasta 4 h</td><td>1 – 3 programas</td></tr>
+          <tr><td>Hasta 6 h</td><td>4 – 6</td></tr>
+          <tr><td>Hasta 10 h</td><td>7 – 15</td></tr>
+          <tr><td>Hasta 15 h</td><td>16 o más</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-12">
+      <table class="table table-sm table-bordered mapeo-table">
+        <thead><tr><th colspan="4">✅ Coordinador/a de Autorregulación</th></tr>
+          <tr><th>Enseñanza directa</th><th>Horas coordinación (Ruta A — Ejecución de planes)</th><th>Horas coordinación (Ruta B — Autoevaluación)</th><th>Máx. total (incl. coordinación)</th></tr></thead>
+        <tbody>
+          <tr><td>Min 14 h / Máx 18 h</td><td>Hasta 15 h</td><td>Hasta 20 h</td><td><strong>40 h</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Tabs campus transición -->
   <ul class="nav nav-tabs campus-tabs mb-3" id="transTabs">
     <li class="nav-item"><a class="nav-link active" href="#" onclick="showCampusTab('trans','vll',this); return false;">📍 Valledupar</a></li>
@@ -414,7 +482,7 @@
         <table class="table table-sm table-bordered table-diag">
           <thead><tr><th>Nuevo Perfil Funcional</th><th>Tipo origen</th><th>N° proyectado</th><th>% planta</th><th>Variación vs. actual</th></tr></thead>
           <tbody>
-            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra TC</span></td><td>PTC (alta docencia)</td><td>88</td><td>28.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Enseñanza TC</span></td><td>PTC (alta docencia)</td><td>88</td><td>28.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-misional">🔬 Misional TC</span></td><td>PTC/PPTC (con inv/ext)</td><td>43</td><td>13.8%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-invext">🧪 Investigador/Extensionista TC</span></td><td>PTC/PPTC (inv. prioritaria)</td><td>13</td><td>4.2%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación TC</span></td><td>PTCVE (sin presencia en VLL)</td><td>0</td><td>0%</td><td><span class="variacion-neg">→ Fortalecer</span></td></tr>
@@ -430,7 +498,7 @@
       </div>
     </div>
     <div class="alert alert-warning py-2 px-3" style="font-size:0.82rem;">
-      <strong>Resumen Valledupar:</strong> La nueva tipología transforma 144 PTC+PPTC en 3 perfiles diferenciados: 88 Líderes en Cátedra (61%), 43 Misionales (30%) y 13 Investigadores/Extensionistas (9%). <strong>Recomendación:</strong> Formalizar al menos 1-2 investigadores bajo convocatoria externa para activar el perfil Líder en Investigación en 2026B.
+      <strong>Resumen Valledupar:</strong> La nueva tipología transforma 144 PTC+PPTC en 3 perfiles diferenciados: 88 Líderes en Enseñanza (61%), 43 Misionales (30%) y 13 Investigadores/Extensionistas (9%). <strong>Recomendación:</strong> Formalizar al menos 1-2 investigadores bajo convocatoria externa para activar el perfil Líder en Investigación en 2026B.
     </div>
   </div>
 
@@ -444,7 +512,7 @@
         <table class="table table-sm table-bordered table-diag">
           <thead><tr><th>Nuevo Perfil Funcional</th><th>Tipo origen</th><th>N° proyectado</th><th>% planta</th><th>Variación vs. actual</th></tr></thead>
           <tbody>
-            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra TC</span></td><td>PTC (alta docencia)</td><td>76</td><td>21.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Enseñanza TC</span></td><td>PTC (alta docencia)</td><td>76</td><td>21.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-misional">🔬 Misional TC</span></td><td>PTC/PPTC (con inv/ext)</td><td>46</td><td>12.9%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-invext">🧪 Investigador/Extensionista TC</span></td><td>PTC/PPTC (inv. prioritaria)</td><td>18</td><td>5.1%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación TC</span></td><td>PTCVE</td><td>2</td><td>0.6%</td><td><span class="variacion-neutral">= consolida PTCVE</span></td></tr>
@@ -474,7 +542,7 @@
         <table class="table table-sm table-bordered table-diag">
           <thead><tr><th>Nuevo Perfil Funcional</th><th>Tipo origen</th><th>N° proyectado</th><th>% planta</th><th>Variación vs. actual</th></tr></thead>
           <tbody>
-            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Cátedra TC</span></td><td>PTC (alta docencia)</td><td>120</td><td>18.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
+            <tr><td><span class="perfil-badge perfil-lcatedra">📚 Líder en Enseñanza TC</span></td><td>PTC (alta docencia)</td><td>120</td><td>18.3%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-misional">🔬 Misional TC</span></td><td>PTC/PPTC (con inv/ext)</td><td>100</td><td>15.2%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-invext">🧪 Investigador/Extensionista TC</span></td><td>PTC/PPTC (inv. prioritaria)</td><td>60</td><td>9.1%</td><td><span class="variacion-neutral">— nuevo perfil</span></td></tr>
             <tr><td><span class="perfil-badge perfil-linv">🏆 Líder en Investigación TC</span></td><td>PTCVE (10)</td><td>10</td><td>1.5%</td><td><span class="variacion-neutral">= consolida PTCVE</span></td></tr>
@@ -490,7 +558,7 @@
       </div>
     </div>
     <div class="alert alert-warning py-2 px-3" style="font-size:0.82rem;">
-      <strong>Resumen Bucaramanga:</strong> La nueva tipología diferencia 310 TC (PTC+PPTC+PTCVE) en 4 perfiles con una distribución más madura: 38% Cátedra, 32% Misional, 19% Investigador, 3% Líder Investigación. <strong>Punto crítico:</strong> Los 30 Prácticas TC con salario Clínico ($6.4M) requieren análisis específico de sostenibilidad dado su impacto desproporcionado en la nómina.
+      <strong>Resumen Bucaramanga:</strong> La nueva tipología diferencia 310 TC (PTC+PPTC+PTCVE) en 4 perfiles con una distribución más madura: 38% Enseñanza, 32% Misional, 19% Investigador, 3% Líder Investigación. <strong>Punto crítico:</strong> Los 30 Prácticas TC con salario Clínico ($6.4M) requieren análisis específico de sostenibilidad dado su impacto desproporcionado en la nómina.
     </div>
   </div>
 </div><!-- fin sec-transicion -->
@@ -551,7 +619,7 @@
         <hr style="border:2px solid var(--udes-gold);margin:14px 0;">
         <!-- TABLA 2: Nueva tipología -->
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Borrador V1)</h6>
+          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Aprobada — 05 junio 2026)</h6>
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-reset" onclick="resetSimulator('vll')">↺ Restablecer 2026A</button>
             <button class="btn btn-sm btn-outline-secondary" onclick="saveScenario('vll')">💾 Guardar</button>
@@ -659,7 +727,7 @@
         </div>
         <hr style="border:2px solid var(--udes-gold);margin:14px 0;">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Borrador V1)</h6>
+          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Aprobada — 05 junio 2026)</h6>
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-reset" onclick="resetSimulator('cuc')">↺ Restablecer 2026A</button>
             <button class="btn btn-sm btn-outline-secondary" onclick="saveScenario('cuc')">💾 Guardar</button>
@@ -766,7 +834,7 @@
         </div>
         <hr style="border:2px solid var(--udes-gold);margin:14px 0;">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Borrador V1)</h6>
+          <h6 class="fw-bold text-primary mb-0">🆕 Nueva tipología funcional 2026 (Aprobada — 05 junio 2026)</h6>
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-reset" onclick="resetSimulator('buc')">↺ Restablecer 2026A</button>
             <button class="btn btn-sm btn-outline-secondary" onclick="saveScenario('buc')">💾 Guardar</button>
@@ -886,6 +954,40 @@
 
 </div><!-- fin sec-informe -->
 
+
+<!-- =====================================================================
+     SECCIÓN 5: POR PROGRAMA
+     ===================================================================== -->
+<div id="sec-programa" class="section-content">
+  <div class="section-title">Distribución por Programa — Tipología Actual vs. Nueva Tipología 2026</div>
+  <div class="alert alert-info py-2 px-3 mb-3" style="font-size:0.82rem;">
+    <strong>Cómo leer:</strong> Seleccione el campus y el programa para ver cuántos profesores de cada tipo tiene actualmente (circular vigente) y cómo se distribuirían en la nueva tipología funcional. La distribución de PTC en nuevos perfiles usa las proporciones del campus completo.
+  </div>
+
+  <!-- Campus tabs -->
+  <ul class="nav nav-tabs campus-tabs mb-3" id="progTabs">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="switchProgCampus('vll',this); return false;">📍 Valledupar</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="switchProgCampus('cuc',this); return false;">📍 Cúcuta</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="switchProgCampus('buc',this); return false;">📍 Bucaramanga</a></li>
+  </ul>
+
+  <!-- Selector de programa -->
+  <div class="row g-2 mb-3">
+    <div class="col-md-6">
+      <label class="form-label mb-1 fw-bold" style="font-size:0.85rem;">Seleccione programa / departamento:</label>
+      <select class="form-select form-select-sm" id="progSelector" onchange="renderPrograma()"></select>
+    </div>
+    <div class="col-md-6 d-flex align-items-end">
+      <div class="text-muted" style="font-size:0.78rem;" id="progCampusLabel"></div>
+    </div>
+  </div>
+
+  <!-- Contenido dinámico -->
+  <div id="progContent">
+    <div class="text-muted text-center py-4" style="font-size:0.9rem;">Seleccione un campus y un programa para ver la distribución.</div>
+  </div>
+</div><!-- fin sec-programa -->
+
 </div><!-- container -->
 
 <!-- FOOTER -->
@@ -902,7 +1004,7 @@ const DATA = {
   vll: {
     name: 'Valledupar',
     perfiles: [
-      { id:'lcatedra', label:'📚 Líder en Cátedra TC',           clase:'perfil-lcatedra', count:88,  salary:3600000, prest:52, fixed:false },
+      { id:'lcatedra', label:'📚 Líder en Enseñanza TC',           clase:'perfil-lcatedra', count:88,  salary:3600000, prest:52, fixed:false },
       { id:'misional', label:'🔬 Misional TC',                   clase:'perfil-misional', count:43,  salary:3772000, prest:52, fixed:false },
       { id:'invext',   label:'🧪 Investigador/Extensionista TC', clase:'perfil-invext',   count:13,  salary:3850000, prest:52, fixed:false },
       { id:'linv',     label:'🏆 Líder en Investigación TC',     clase:'perfil-linv',     count:0,   salary:4200000, prest:52, fixed:false },
@@ -917,7 +1019,7 @@ const DATA = {
   cuc: {
     name: 'Cúcuta',
     perfiles: [
-      { id:'lcatedra', label:'📚 Líder en Cátedra TC',           clase:'perfil-lcatedra', count:76,  salary:3650000, prest:52, fixed:false },
+      { id:'lcatedra', label:'📚 Líder en Enseñanza TC',           clase:'perfil-lcatedra', count:76,  salary:3650000, prest:52, fixed:false },
       { id:'misional', label:'🔬 Misional TC',                   clase:'perfil-misional', count:46,  salary:3843000, prest:52, fixed:false },
       { id:'invext',   label:'🧪 Investigador/Extensionista TC', clase:'perfil-invext',   count:18,  salary:3950000, prest:52, fixed:false },
       { id:'linv',     label:'🏆 Líder en Investigación TC',     clase:'perfil-linv',     count:2,   salary:6306000, prest:52, fixed:false },
@@ -932,7 +1034,7 @@ const DATA = {
   buc: {
     name: 'Bucaramanga',
     perfiles: [
-      { id:'lcatedra', label:'📚 Líder en Cátedra TC',           clase:'perfil-lcatedra', count:120, salary:3700000, prest:52, fixed:false },
+      { id:'lcatedra', label:'📚 Líder en Enseñanza TC',           clase:'perfil-lcatedra', count:120, salary:3700000, prest:52, fixed:false },
       { id:'misional', label:'🔬 Misional TC',                   clase:'perfil-misional', count:100, salary:3915000, prest:52, fixed:false },
       { id:'invext',   label:'🧪 Investigador/Extensionista TC', clase:'perfil-invext',   count:60,  salary:4300000, prest:52, fixed:false },
       { id:'linv',     label:'🏆 Líder en Investigación TC',     clase:'perfil-linv',     count:10,  salary:6306000, prest:52, fixed:false },
@@ -1596,6 +1698,447 @@ function updateReport() {
 }
 
 // ============================================================
+// DATOS POR PROGRAMA (extraídos de nómina 2026A)
+// ============================================================
+const PROG_DATA = {
+  "vll": {
+    "ADMINISTRACIÓN FINANCIERA": {"PMT": 6,"ComAdm": 4,"PPTC": 2,"PTC": 4},
+    "BACTERIOLOGÍA Y LABORATORIO CLÍNICO": {"PMT": 8,"ComAdm": 1,"PTC": 21},
+    "BIENESTAR UNIVERSITARIO": {"PMT": 1,"Bienestar": 18,"PTC": 2},
+    "CIENCIAS BÁSICAS": {"PMT": 4,"ComAdm": 1,"PTC": 12},
+    "COMUNICACIÓN SOCIAL Y PERIODISMO": {"PMT": 5,"ComAdm": 1,"PTC": 7},
+    "CURSOS DE INFORMATICA": {"PMT": 2,"Informatica": 4,"PTC": 2},
+    "DEPARTAMENTO SALUD PÚBLICA Y EPIDEMIOLOGÍA": {"PMT": 1,"ComAdm": 1,"PracTC": 1,"PracMT": 1,"PTC": 5},
+    "DERECHO": {"PMT": 13,"ComAdm": 1,"PTC": 16,"PC": 3},
+    "DESARROLLO ESTUDIANTIL": {"PMT": 3,"ComAdm": 1,"PTC": 5},
+    "DIRECCIÓN DE DOCENCIA": {"PTC": 2},
+    "DISEÑO GRÁFICO": {"PMT": 7,"ComAdm": 1,"PTC": 6},
+    "ENFERMERÍA": {"PTC": 1},
+    "ESPECIALIZACIÓN EN FINANZAS": {"PTC": 1},
+    "ESPECIALIZACIÓN EN GERENCIA DE LA CALIDAD Y AUDITORÍA DE SERVICIOS DE SALUD": {"PMT": 1,"PPTC": 1,"PTC": 1},
+    "ESPECIALIZACIÓN EN GERENCIA DEL TALENTO HUMANO": {"ComAdm": 1,"PTC": 2},
+    "ESPECIALIZACIÓN SEGURIDAD Y SALUD EN EL TRABAJO": {"ComAdm": 1,"PTC": 2},
+    "FISIOTERAPIA": {"PMT": 3,"ComAdm": 2,"PTC": 25},
+    "IDIOMAS": {"Idiomas": 4,"PTC": 4},
+    "INGENIERÍA INDUSTRIAL": {"PMT": 3,"ComAdm": 2,"PTC": 14},
+    "MAESTRÍA EN GESTIÓN DE SERVICIOS DE SALUD": {"PMT": 1},
+    "MAESTRÍA EN SALUD PÚBLICA": {"PTC": 3},
+    "MEDICINA": {"PracMT": 31,"Informatica": 1,"ComAdm": 1,"PracTC": 14,"PMT": 8,"PTC": 10},
+    "MEDICINA VETERINARIA Y ZOOTECNIA": {"PMT": 1,"PPTC": 1,"ComAdm": 1,"PC": 2,"PTC": 18},
+    "MORFOFISIOLOGÍA": {"PMT": 4,"ComAdm": 1,"PTC": 4},
+    "PSICOLOGÍA": {"PMT": 8,"ComAdm": 1,"PPMT": 1,"PTC": 14},
+    "SOCIOHUMANIDADES": {"PMT": 9,"Informatica": 1,"ComAdm": 1,"PracTC": 1,"Bienestar": 1,"PTC": 11}
+  },
+  "cuc": {
+    "ADMINISTRACIÓN FINANCIERA": {"PMT": 2,"PPTC": 3,"ComAdm": 1,"PTCVE": 1,"PTC": 4},
+    "BACTERIOLOGÍA Y LABORATORIO CLÍNICO": {"PracMT": 3,"PPTC": 2,"ComAdm": 1,"PMT": 9,"PTC": 15},
+    "BIENESTAR UNIVERSITARIO": {"Bienestar": 12,"PC": 1,"PTC": 2},
+    "CIENCIAS BASICAS INGENIERIAS": {"PMT": 2,"ComAdm": 2,"PTC": 4},
+    "CIENCIAS BASICAS SALUD": {"PTC": 10,"PC": 1},
+    "COMERCIO EXTERIOR": {"PMT": 4,"ComAdm": 1,"PPTC": 1,"PTC": 6},
+    "CURSOS DE INFORMATICA": {"PMT": 1,"Informatica": 8},
+    "DERECHO": {"PMT": 10,"ComAdm": 1,"PTC": 7,"PC": 4},
+    "DISEÑO GRÁFICO": {"PMT": 3,"ComAdm": 1,"PTC": 7},
+    "DOCENTES GRUPOS NACIONALES/FUSIÓN": {"PTC": 1},
+    "ENFERMERÍA": {"PracMT": 7,"PPTC": 1,"ConvDoc": 2,"ComAdm": 1,"PMT": 1,"PC": 1,"PTC": 13},
+    "ESPECIALIZACION EN ADMINISTRACION DE PROYECTOS": {"PMT": 2,"ComAdm": 1},
+    "ESPECIALIZACIÓN EN DERECHO MÉDICO": {"ComAdm": 1},
+    "ESPECIALIZACIÓN EN DERECHO PROCESAL PENAL, INVESTIGACIÓN Y JUZGAMIENTO DE CIBERDELITOS": {"ComAdm": 1},
+    "ESPECIALIZACIÓN EN DIRECCIÓN DE OPERACIONES Y LOGÍSTICA": {"PTC": 1},
+    "ESPECIALIZACION EN GERENCIA DE SISTEMAS INTEGRADOS DE GESTION": {"PTCVE": 1},
+    "EXITO ESTUDIANTIL": {"PMT": 3,"PTC": 6},
+    "FACULTAD DE CIENCIAS DE SALUD": {"PTCVE": 1},
+    "FISIOTERAPIA": {"PMT": 6,"ComAdm": 1,"PC": 1,"PTCVE": 1,"PTC": 13},
+    "IDIOMAS": {"Idiomas": 7},
+    "INGENIERIA DE SISTEMAS": {"PMT": 6,"ComAdm": 2,"PTC": 8},
+    "INGENIERÍA INDUSTRIAL": {"PMT": 3,"PPTC": 2,"ComAdm": 1,"PC": 3,"PTC": 5},
+    "INVESTIGACION": {"PMT": 1,"ComAdm": 1,"PC": 2,"PTCVE": 1,"PTC": 7},
+    "MAESTRÍA EN BIOTECNOLOGÍA": {"PPTC": 1},
+    "MAESTRÍA EN ESTADÍSTICA APLICADA Y ANALÍTICA DE DATOS": {"PTC": 1},
+    "MEDICINA": {"PMT": 3,"ComAdm": 1,"PracMT": 60,"PracTC": 13,"PC": 4,"PTC": 13},
+    "MERCADEO Y PUBLICIDAD": {"ComAdm": 1,"PPTC": 1,"PTC": 12},
+    "MORFOFISIOLOGÍA": {"PMT": 4,"PTC": 1,"PC": 1},
+    "PSICOLOGÍA": {"PMT": 7,"ComAdm": 1,"PTC": 14},
+    "SOCIOHUMANIDADES": {"PMT": 6,"PTC": 3},
+    "TERAPIA OCUPACIONAL": {"PMT": 5,"ComAdm": 1,"PracTC": 1,"PC": 1,"PTC": 15},
+    "VICERRECTORIA DE EXTENSION": {"PTC": 1}
+  },
+  "buc": {
+    "ADMINISTRACIÓN DE NEGOCIOS INTERNACIONALES": {"PMT": 5,"ComAdm": 1,"PTC": 3},
+    "ADMINISTRACIÓN FINANCIERA": {"PMT": 7,"PPTC": 2,"PTC": 3},
+    "ANTROPOLOGÍA": {"PMT": 4,"PPMT": 2,"PTC": 1},
+    "BACTERIOLOGÍA Y LABORATORIO CLÍNICO": {"PMT": 7,"PPTC": 5,"ComAdm": 1,"PC": 1,"PTCVE": 2,"PTC": 17},
+    "BIENESTAR INSTITUCIONAL": {"PPTC": 2,"PTC": 1,"Bienestar": 29},
+    "CIENCIAS BÁSICAS": {"PMT": 3,"PPTC": 8,"ComAdm": 1,"PTCVE": 2,"PTC": 15},
+    "COMUNICACIÓN SOCIAL Y PERIODISMO": {"PMT": 6,"ComAdm": 1,"PTC": 6},
+    "CONTADURÍA PÚBLICA": {"ComAdm": 1,"PMT": 4,"PPTC": 4,"PTC": 4},
+    "DEPARTAMENTO DE FORMACION TECNICA UDES": {"ComAdm": 1},
+    "DEPARTAMENTO DE INVESTIGACION INSTITUTO MASIRA": {"PMT": 3,"PTCVE": 1,"ComAdm": 1,"PTC": 1},
+    "DEPARTAMENTO DE SALUD PUBLICA": {"PMT": 5,"ComAdm": 2,"PPTC": 4,"PTC": 8},
+    "DERECHO": {"PMT": 8,"PPTC": 1,"ComAdm": 3,"PC": 2,"PTCVE": 1,"PTC": 5},
+    "DOCTORADO EN ENFERMEDADES INFECCIOSAS": {"PTCVE": 1,"PPTC": 3,"PTC": 3,"PracMT": 1},
+    "DOCTORADO EN INNOVACIÓN EDUCATIVA": {"PTCVE": 1},
+    "DOCTORADO EN RECURSOS ENERGÉTICOS RENOVABLES": {"PTCVE": 1},
+    "ENFERMERÍA": {"PMT": 2,"PPTC": 4,"ConvDoc": 17,"ComAdm": 2,"PC": 1,"PTC": 18},
+    "ESPECIALIZACIÓN DE ENFERMERÍA EN CUIDADO CRÍTICO PARA EL ADULTO": {"ComAdm": 1},
+    "ESPECIALIZACIÓN EN CUIDADO INTENSIVO PEDIÁTRICO": {"PracTC": 1},
+    "ESPECIALIZACIÓN EN DERECHO MÉDICO": {"ComAdm": 1},
+    "ESPECIALIZACIÓN EN DERECHO PROCESAL PENAL, INVESTIGACIÓN Y JUZGAMIENTO DE CIBERDELITOS": {"ComAdm": 1},
+    "ESPECIALIZACIÓN EN GEOTECNIA AMBIENTAL": {"PMT": 2,"ComAdm": 1,"PTC": 1},
+    "ESPECIALIZACIÓN EN GERENCIA DE INSTITUCIONES DE SALUD": {"PTC": 1},
+    "ESPECIALIZACIÓN EN GESTIÓN AMBIENTAL EN LA INDUSTRIA MINERA Y PETROLERA": {"ComAdm": 1},
+    "ESPECIALIZACIÓN EN MEDICINA CRÍTICA Y CUIDADO INTENSIVO PEDIÁTRICO": {"PTC": 2},
+    "ESPECIALIZACIÓN EN MEDICINA FAMILIAR": {"PracTC": 7,"PTC": 4},
+    "ESPECIALIZACION EN MEDICINA INTERNA": {"PTC": 1},
+    "ESPECIALIZACIÓN EN ORTOPEDIA Y TRAUMATOLOGÍA": {"PTC": 2},
+    "ESPECIALIZACION EN PEDIATRIA": {"PracTC": 8,"PTC": 1},
+    "ESPECIALIZACION EN RADIOLOGÍA E IMÁGENES DIAGNÓSTICAS": {"PTC": 2},
+    "ESPECIALIZACION EN SISTEMAS DE GARANTÍA DE LA CALIDAD Y AUDITORIA DE SERVICIOS DE SALUD": {"PTC": 1},
+    "EXITO ESTUDIANTIL": {"PMT": 2,"Bienestar": 1,"PTC": 11},
+    "FACULTAD DE CIENCIAS DE LA SALUD": {"PPTC": 1},
+    "FISIOTERAPIA": {"PMT": 17,"Informatica": 1,"PPTC": 5,"ComAdm": 2,"PC": 1,"PTC": 15},
+    "FONOAUDIOLOGÍA": {"ComAdm": 1,"PMT": 8,"PPTC": 4,"PTC": 10},
+    "GEOLOGÍA": {"PMT": 5,"ComAdm": 1,"PTC": 5},
+    "HUMANIDADES": {"PMT": 6,"ComAdm": 1,"PPTC": 1,"PTC": 5},
+    "IDIOMAS": {"Idiomas": 9,"PPTC": 1,"ConvDoc": 1},
+    "INFORMÁTICA": {"Informatica": 14},
+    "INGENIERÍA AGROINDUSTRIAL": {"PMT": 1,"ComAdm": 1,"PPTC": 1,"PTC": 1},
+    "INGENIERÍA AMBIENTAL": {"ComAdm": 1,"PPTC": 3,"PTC": 4},
+    "INGENIERÍA CIVIL": {"PMT": 4,"PPTC": 1,"ComAdm": 2,"PTCVE": 1,"PTC": 8},
+    "INGENIERÍA DE SOFTWARE": {"ComAdm": 2,"PMT": 3,"PPTC": 2,"PTC": 8},
+    "INGENIERÍA DE SOFTWARE - VIRTUAL": {"ComAdm": 2,"PPTC": 2,"PTC": 9},
+    "INGENIERÍA EN CIENCIAS DE LA COMPUTACIÓN E INTELIGENCIA ARTIFICIAL": {"ComAdm": 1,"PTC": 2},
+    "INGENIERIA EN ENERGIAS": {"ComAdm": 1},
+    "INGENIERÍA INDUSTRIAL": {"PMT": 3,"PPTC": 2,"ComAdm": 1,"PC": 4,"PTC": 11},
+    "INGENIERÍA PETROQUÍMICA": {"PMT": 1,"ComAdm": 4,"PTC": 2},
+    "INSTITUTO XERIRA": {"ComAdm": 1,"PPTC": 1,"PTC": 1},
+    "INSTRUMENTACIÓN QUIRÚRGICA": {"PracMT": 5,"PPTC": 4,"ComAdm": 1,"PMT": 22,"PracTC": 1,"PC": 1,"PTC": 13},
+    "LICENCIATURA EN EDUCACIÓN INFANTIL": {"PMT": 1,"PTC": 3},
+    "MAESTRÍA EN BIOTECNOLOGÍA": {"PPTC": 3},
+    "MAESTRÍA EN CIENCIAS VETERINARIAS": {"PTC": 1},
+    "MAESTRÍA EN GESTIÓN DE SERVICIOS DE SALUD": {"PTCVE": 1,"ComAdm": 1},
+    "MAESTRÍA EN INVESTIGACIÓN EN ENFERMEDADES INFECCIOSAS": {"PMT": 1,"PPTC": 4,"PPMT": 1,"PTC": 4},
+    "MAESTRÍA EN PRIMERA INFANCIA: EDUCACIÓN Y DESARROLLO": {"PTCVE": 1},
+    "MATEMÁTICAS": {"PMT": 2,"PPTC": 2,"ComAdm": 1,"PPMT": 1,"PTCVE": 1,"PTC": 9},
+    "MEDICINA": {"PracMT": 37,"PPTC": 6,"PPMT": 2,"PracTC": 29,"PMT": 4,"PTCVE": 1,"PTC": 18},
+    "MEDICINA VETERINARIA": {"PMT": 9,"ComAdm": 2,"PPTC": 9,"PTC": 13},
+    "MERCADEO Y PUBLICIDAD": {"PMT": 2,"ComAdm": 1,"PTC": 13},
+    "MICROBIOLOGÍA INDUSTRIAL": {"PMT": 1,"PPTC": 8,"PPMT": 1,"PTCVE": 2,"PTC": 6},
+    "MORFOFISIOLOGÍA": {"PMT": 2,"PTC": 7},
+    "PSICOLOGÍA": {"PMT": 10,"PPTC": 3,"ComAdm": 1,"PC": 1,"PTCVE": 1,"PTC": 5},
+    "TECNOLOGIA EN COMUNICACION GRAFICA": {"ComAdm": 1,"PTC": 10},
+    "TECNOLOGÍA EN GESTIÓN LOGÍSTICA DEL COMERCIO EXTERIOR": {"ComAdm": 1,"PTC": 2},
+    "TECNOLOGÍA SUPERVISIÓN DE OBRAS CIVILES": {"PMT": 3,"ComAdm": 1,"PPTC": 1,"PTC": 4},
+    "TERAPIA OCUPACIONAL": {"PMT": 5,"ComAdm": 1,"PPTC": 2,"PTC": 9},
+    "VICERECTORIA DE EXTENSIÓN": {"PPTC": 1}
+  }
+};
+
+// Proporciones campus para distribuir PTC en nuevos perfiles
+const PTC_SPLITS = {
+  vll: { lcatedra: 0.61, misional: 0.30, invext: 0.09 },
+  cuc: { lcatedra: 0.54, misional: 0.33, invext: 0.13 },
+  buc: { lcatedra: 0.43, misional: 0.36, invext: 0.21 }
+};
+// Proporciones para PPTC
+const PPTC_SPLITS = { misional: 0.60, invext: 0.40 };
+
+// ============================================================
+// FUNCIONES VISTA POR PROGRAMA
+// ============================================================
+let currentProgCampus = 'vll';
+let progChart = null;
+
+function switchProgCampus(campus, el) {
+  currentProgCampus = campus;
+  const tabs = el.closest('ul').querySelectorAll('.nav-link');
+  tabs.forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  populateProgSelector(campus);
+  renderPrograma();
+}
+
+function populateProgSelector(campus) {
+  const sel = document.getElementById('progSelector');
+  sel.innerHTML = '';
+  const progs = Object.keys(PROG_DATA[campus]).sort();
+  progs.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    sel.appendChild(opt);
+  });
+  const names = { vll: 'Valledupar', cuc: 'Cúcuta', buc: 'Bucaramanga' };
+  document.getElementById('progCampusLabel').textContent =
+    'Campus ' + names[campus] + ' · ' + progs.length + ' programas/departamentos';
+}
+
+function mapToNuevaTipologia(tipos, campus) {
+  const split = PTC_SPLITS[campus];
+  const result = { lcatedra:0, misional:0, invext:0, linv:0, ladm:0, mt:0, hc:0, pracmt:0, practc:0, otros:0 };
+  Object.entries(tipos).forEach(([tipo, n]) => {
+    switch(tipo) {
+      case 'PTC':
+        result.lcatedra += Math.round(n * split.lcatedra);
+        result.misional  += Math.round(n * split.misional);
+        result.invext    += n - Math.round(n * split.lcatedra) - Math.round(n * split.misional);
+        break;
+      case 'PPTC':
+        result.misional += Math.round(n * PPTC_SPLITS.misional);
+        result.invext   += n - Math.round(n * PPTC_SPLITS.misional);
+        break;
+      case 'PMT': case 'PPMT': result.mt  += n; break;
+      case 'PTCVE':             result.linv += n; break;
+      case 'ComAdm':            result.ladm += n; break;
+      case 'PracMT':            result.pracmt += n; break;
+      case 'PracTC':            result.practc += n; break;
+      case 'PC': case 'ConvDoc': result.hc += n; break;
+      default:                  result.otros += n; break;
+    }
+  });
+  return result;
+}
+
+function getCircSalarios(campus) {
+  const map = {};
+  CIRC_DATA[campus].forEach(p => {
+    const l = p.label;
+    let key = null;
+    if      (l.includes('PPTC') || (l.includes('Planta') && l.includes('Completo'))) key = 'PPTC';
+    else if (l.includes('PPMT') || (l.includes('Planta') && l.includes('Medio')))    key = 'PPMT';
+    else if (l.includes('PTCVE') || l.includes('Vinculación'))                        key = 'PTCVE';
+    else if (l.includes('PTC')  || l.includes('Tiempo Completo'))                    key = 'PTC';
+    else if (l.includes('PMT')  || l.includes('Medio Tiempo'))                       key = 'PMT';
+    else if (l.includes('Comisión') || l.includes('Comision'))                        key = 'ComAdm';
+    else if (l.includes('Prácticas') && l.includes('MT'))                             key = 'PracMT';
+    else if (l.includes('Prácticas') || l.includes('Practicas'))                      key = 'PracTC';
+    else if (l.includes('Bienestar'))                                                  key = 'Bienestar';
+    else if (l.includes('Convenio'))                                                   key = 'ConvDoc';
+    else if (l.includes('Cátedra') || l.includes('Catedra'))                          key = 'PC';
+    if (key && !map[key]) map[key] = { salary: p.salary, prest: p.prest };
+  });
+  const def = (s, pr) => ({ salary: s, prest: pr });
+  if (!map['Bienestar'])  map['Bienestar']  = def(2500000, 50);
+  if (!map['Idiomas'])    map['Idiomas']    = def(2300000, 50);
+  if (!map['Informatica'])map['Informatica']= def(2200000, 50);
+  if (!map['ConvDoc'])    map['ConvDoc']    = def(2500000, 50);
+  if (!map['Otro'])       map['Otro']       = def(2000000, 50);
+  return map;
+}
+
+function renderPrograma() {
+  const campus = currentProgCampus;
+  const prog = document.getElementById('progSelector').value;
+  if (!prog || !PROG_DATA[campus][prog]) return;
+
+  const tipos = PROG_DATA[campus][prog];
+  const nueva = mapToNuevaTipologia(tipos, campus);
+
+  const totalCirc  = Object.values(tipos).reduce((s,v) => s+v, 0);
+  const totalNueva = Object.values(nueva).reduce((s,v) => s+v, 0);
+
+  const tipoLabels = {
+    PTC:'PTC Tiempo Completo', PMT:'PMT Medio Tiempo', PPTC:'PPTC Planta TC',
+    PPMT:'PPMT Planta MT', PTCVE:'PTCVE Vinculación Especial',
+    ComAdm:'Comisión Administrativa', PracMT:'Prácticas Salud MT', PracTC:'Prácticas Salud TC',
+    PC:'Profesor Cátedra', Bienestar:'Bienestar/Inst.', Idiomas:'Idiomas', Informatica:'Informática',
+    ConvDoc:'Convenio Docencia', Otro:'Otros'
+  };
+  const perfilLabels = {
+    lcatedra:'📚 Líder en Enseñanza TC', misional:'🔬 Misional TC',
+    invext:'🧪 Investigador/Extensionista TC', linv:'🏆 Líder en Investigación TC',
+    ladm:'🏛 Líder Administrativo', mt:'⏱ Medio Tiempo',
+    hc:'🎓 Hora Cátedra / Instructores', pracmt:'🏥 Prácticas Clínicas MT',
+    practc:'🏥 Prácticas Clínicas TC', otros:'🏢 Bienestar y Otros'
+  };
+  const perfilClases = {
+    lcatedra:'perfil-lcatedra', misional:'perfil-misional', invext:'perfil-invext',
+    linv:'perfil-linv', ladm:'perfil-ladm', mt:'perfil-mt', hc:'perfil-hc',
+    pracmt:'perfil-prac', practc:'perfil-prac', otros:'perfil-otros'
+  };
+
+  // ── Cálculo financiero ──────────────────────────────────────────
+  const circSals = getCircSalarios(campus);
+  const nuevaSals = {};
+  DATA[campus].perfiles.forEach(p => { nuevaSals[p.id] = { salary: p.salary, prest: p.prest }; });
+
+  let costoCircMes = 0, costoCircPrestMes = 0;
+  Object.entries(tipos).forEach(([k,n]) => {
+    const s = circSals[k] || { salary: 2500000, prest: 50 };
+    costoCircMes     += n * s.salary;
+    costoCircPrestMes += n * s.salary * (1 + s.prest / 100);
+  });
+  const costoCircSem = costoCircPrestMes * 4;
+
+  let costoNuevaMes = 0, costoNuevaPrestMes = 0;
+  Object.entries(nueva).forEach(([k,n]) => {
+    if (n <= 0) return;
+    const s = nuevaSals[k] || { salary: 3000000, prest: 52 };
+    costoNuevaMes     += n * s.salary;
+    costoNuevaPrestMes += n * s.salary * (1 + s.prest / 100);
+  });
+  const costoNuevaSem = costoNuevaPrestMes * 4;
+
+  const deltaM   = costoNuevaMes - costoCircMes;
+  const deltaSem = costoNuevaSem - costoCircSem;
+  const deltaPct = costoCircMes > 0 ? ((deltaM / costoCircMes) * 100).toFixed(1) : 0;
+  const esAhorro = deltaM < 0;
+  const signM  = deltaM  >= 0 ? '+' : '';
+  const signS  = deltaSem >= 0 ? '+' : '';
+  const deltaKpiCls = esAhorro ? 'ahorro' : 'aumento';
+  const deltaLabel  = esAhorro ? '↓ Ahorro estimado' : '↑ Aumento estimado';
+
+  // ── Insights ejecutivos ─────────────────────────────────────────
+  const insights = [];
+  const maxEntry = Object.entries(tipos).sort(([,a],[,b]) => b-a)[0];
+  if (maxEntry) {
+    insights.push('Tipo <strong>predominante</strong> en circular: ' + (tipoLabels[maxEntry[0]]||maxEntry[0]) +
+      ' — ' + maxEntry[1] + ' profes. (' + (maxEntry[1]/totalCirc*100).toFixed(1) + '% de la planta del programa)');
+  }
+  insights.push((esAhorro ? '🟢' : '🔴') + ' Δ costo mensual estimado: <strong>' + signM + copM(deltaM) +
+    '</strong> (' + signM + deltaPct + '%) — ' + (esAhorro ? '<span class="text-success fw-bold">ahorro</span>' : '<span class="text-danger fw-bold">aumento</span>') + ' vs. circular anterior');
+
+  if ((nueva.linv || 0) === 0) {
+    insights.push('⚠️ Sin perfil <strong>Líder en Investigación</strong> proyectado — oportunidad para fortalecer I+D en el programa');
+  }
+  const pctPracTC = totalCirc > 0 ? (tipos.PracTC||0) / totalCirc : 0;
+  if (pctPracTC > 0.20) {
+    insights.push('⚠️ Alta proporción Prácticas Clínicas TC (<strong>' + (pctPracTC*100).toFixed(1) + '%</strong>) — revisar sostenibilidad financiera del componente clínico');
+  }
+  if (Math.abs(Number(deltaPct)) < 2) {
+    insights.push('ℹ️ Impacto financiero prácticamente neutro — la transición de tipología no genera variación significativa de costo en este programa');
+  }
+  const insightHtml = insights.map(i => '<li style="font-size:0.82rem;margin-bottom:5px;">' + i + '</li>').join('');
+
+  // ── Filas tablas ────────────────────────────────────────────────
+  const filasCirc = Object.entries(tipos).filter(([,v]) => v > 0).map(([k,v]) => {
+    const s = circSals[k] || { salary: 2500000, prest: 50 };
+    return '<tr><td style="font-size:0.82rem;font-weight:600;">' + (tipoLabels[k]||k) + '</td>' +
+      '<td class="text-center fw-bold">' + v + '</td>' +
+      '<td class="text-center text-muted" style="font-size:0.78rem;">' + ((v/totalCirc*100).toFixed(1)) + '%</td>' +
+      '<td class="text-end" style="font-size:0.78rem;">' + cop(v * s.salary) + '</td></tr>';
+  }).join('');
+
+  const filasNueva = Object.entries(nueva).filter(([,v]) => v > 0).map(([k,v]) => {
+    const s = nuevaSals[k] || { salary: 3000000, prest: 52 };
+    return '<tr><td><span class="perfil-badge ' + (perfilClases[k]||'') + '" style="font-size:0.75rem;">' +
+      (perfilLabels[k]||k) + '</span></td>' +
+      '<td class="text-center fw-bold">' + v + '</td>' +
+      '<td class="text-center text-muted" style="font-size:0.78rem;">' + ((v/totalNueva*100).toFixed(1)) + '%</td>' +
+      '<td class="text-end" style="font-size:0.78rem;">' + cop(v * s.salary) + '</td></tr>';
+  }).join('');
+
+  const html = `
+  <!-- KPI cards financieras -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="report-kpi-circ">
+        <div class="report-kpi-title">📋 Circular anterior</div>
+        <div class="report-kpi-value">${copM(costoCircMes)}<small style="font-size:0.6em;">/mes</small></div>
+        <div class="report-kpi-sub">Sem. c/prest. (4 meses): <strong>${copM(costoCircSem)}</strong></div>
+        <div class="report-kpi-sub">N° profesores: <strong>${totalCirc}</strong></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="report-kpi-nueva">
+        <div class="report-kpi-title">🆕 Nueva tipología 2026</div>
+        <div class="report-kpi-value">${copM(costoNuevaMes)}<small style="font-size:0.6em;">/mes</small></div>
+        <div class="report-kpi-sub">Sem. c/prest. (4 meses): <strong>${copM(costoNuevaSem)}</strong></div>
+        <div class="report-kpi-sub">N° perfiles: <strong>${totalNueva}</strong></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="report-kpi-delta ${deltaKpiCls}">
+        <div class="report-kpi-title">⚖️ ${deltaLabel}</div>
+        <div class="report-kpi-value ${esAhorro ? 'variacion-neg' : 'variacion-pos'}" style="font-size:1.2rem;">
+          ${signM}${copM(deltaM)}<small style="font-size:0.6em;">/mes</small>
+        </div>
+        <div class="report-kpi-sub">Δ %: <strong>${signM}${deltaPct}%</strong> vs. circular</div>
+        <div class="report-kpi-sub">Δ sem. c/prest.: <strong>${signS}${copM(deltaSem)}</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights ejecutivos -->
+  <div class="hallazgo-item mb-3">
+    <div class="hi-title mb-1">Insights ejecutivos — ${prog}</div>
+    <ul class="mb-0 ps-3">${insightHtml}</ul>
+  </div>
+
+  <!-- Tablas + gráfica -->
+  <div class="row g-3">
+    <div class="col-lg-5">
+      <div class="row g-2">
+        <div class="col-6">
+          <div style="font-size:0.8rem;font-weight:700;color:#856404;margin-bottom:4px;">📋 Circular vigente</div>
+          <table class="table table-sm table-bordered" style="font-size:0.8rem;">
+            <thead><tr><th>Tipo</th><th class="text-center">N°</th><th class="text-center">%</th><th class="text-end">$/mes</th></tr></thead>
+            <tbody>${filasCirc}</tbody>
+            <tfoot><tr style="background:#fff8e1;font-weight:700;"><td>Total</td><td class="text-center">${totalCirc}</td><td></td><td class="text-end">${cop(costoCircMes)}</td></tr></tfoot>
+          </table>
+        </div>
+        <div class="col-6">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:4px;">🆕 Nueva tipología</div>
+          <table class="table table-sm table-bordered" style="font-size:0.8rem;">
+            <thead><tr><th>Perfil</th><th class="text-center">N°</th><th class="text-center">%</th><th class="text-end">$/mes</th></tr></thead>
+            <tbody>${filasNueva}</tbody>
+            <tfoot><tr style="background:#e8f4fd;font-weight:700;"><td>Total</td><td class="text-center">${totalNueva}</td><td></td><td class="text-end">${cop(costoNuevaMes)}</td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:8px;">Comparativo visual: Circular vs. Nueva Tipología</div>
+      <div style="position:relative;height:290px;"><canvas id="chartPrograma"></canvas></div>
+      <div class="footnote mt-2">* Distribución de PTC/PPTC usa proporciones del campus. Salarios: promedios reales 2026A. Prestacional TC=52%, MT=46%.</div>
+    </div>
+  </div>`;
+
+  document.getElementById('progContent').innerHTML = html;
+
+  // Construir gráfica
+  const ctx = document.getElementById('chartPrograma');
+  if (!ctx) return;
+  if (progChart) { progChart.destroy(); progChart = null; }
+
+  const labelsCirc = Object.entries(tipos).filter(([,v])=>v>0).map(([k]) => tipoLabels[k]||k);
+  const dataCirc   = Object.entries(tipos).filter(([,v])=>v>0).map(([,v]) => v);
+  const labelsNueva = Object.entries(nueva).filter(([,v])=>v>0).map(([k]) => (perfilLabels[k]||k).replace(/[📚🔬🧪🏆🏛⏱🎓🏥🏢]/gu,'').trim());
+  const dataNueva   = Object.entries(nueva).filter(([,v])=>v>0).map(([,v]) => v);
+  const coloresCirc = ['#1b3a6b','#2a5298','#c9a227','#f0c040','#6610f2','#dc3545','#fd7e14','#e85d04','#198754','#6c757d','#0dcaf0','#adb5bd','#999'];
+  const coloresNueva = ['#6ea8fe','#75b798','#ffc107','#c29ffa','#f1aeb5','#79dbd2','#adb5bd','#ffb06a','#ff8c40','#cccccc'];
+
+  progChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Circular vigente', 'Nueva tipología'],
+      datasets: [
+        ...labelsCirc.map((l, i) => ({
+          label: l,
+          data: [dataCirc[i], null],
+          backgroundColor: coloresCirc[i % coloresCirc.length],
+          stack: 'circular'
+        })),
+        ...labelsNueva.map((l, i) => ({
+          label: l,
+          data: [null, dataNueva[i]],
+          backgroundColor: coloresNueva[i % coloresNueva.length],
+          stack: 'nueva'
+        }))
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'N° de profesores' } } },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, padding: 6 } },
+        tooltip: { mode: 'index' }
+      }
+    }
+  });
+}
+
+// ============================================================
 // INICIALIZACIÓN
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -1612,6 +2155,9 @@ document.addEventListener('DOMContentLoaded', function() {
     buildCircular(c);
     buildSimulator(c);
   });
+  // Inicializar vista por programa
+  populateProgSelector('vll');
+  renderPrograma();
 });
 </script>
 </body>
