@@ -91,9 +91,9 @@
   .report-resumen-table td { font-size:0.85rem; vertical-align:middle; }
   .report-total-row { background:#e8f4fd; font-weight:800; }
   @media print {
-    .main-nav, .btn, #reportActions { display:none !important; }
+    .main-nav, .btn, #reportActions, #reportProgActions, #progTabsInforme, .progSelectorWrap { display:none !important; }
     .section-content { display:block !important; page-break-before:always; }
-    #sec-informe { display:block !important; page-break-before:auto; }
+    #sec-informe, #sec-informe-prog { display:block !important; page-break-before:auto; }
     body { background:#fff; font-size:10px; }
     .report-campus-card { page-break-inside:avoid; }
   }
@@ -141,12 +141,17 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" href="#" onclick="showSection('informe',this); updateReport(); return false;">
-        <span class="nav-num">4</span>Informe Comparativo
+        <span class="nav-num">4</span>Informe por Campus
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="#" onclick="showSection('programa',this); return false;">
         <span class="nav-num">5</span>Por Programa
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="showSection('informe-prog',this); updateReportProg(); return false;">
+        <span class="nav-num">6</span>Informe por Programa
       </a>
     </li>
   </ul>
@@ -912,7 +917,7 @@
      SECCIÓN 4: INFORME COMPARATIVO
      ===================================================================== -->
 <div id="sec-informe" class="section-content">
-  <div class="section-title">Informe Comparativo — Tipología Circular Anterior vs. Nueva Tipología 2026</div>
+  <div class="section-title">Informe Comparativo por Campus — Tipología Circular Anterior vs. Nueva Tipología 2026</div>
 
   <div class="d-flex justify-content-between align-items-center mb-3" id="reportActions">
     <div style="font-size:0.82rem;color:#6c757d;">
@@ -987,6 +992,47 @@
     <div class="text-muted text-center py-4" style="font-size:0.9rem;">Seleccione un campus y un programa para ver la distribución.</div>
   </div>
 </div><!-- fin sec-programa -->
+
+
+<!-- =====================================================================
+     SECCIÓN 6: INFORME COMPARATIVO POR PROGRAMA
+     ===================================================================== -->
+<div id="sec-informe-prog" class="section-content">
+  <div class="section-title">Informe Comparativo por Programa — Tipología Circular Anterior vs. Nueva Tipología 2026</div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3" id="reportProgActions">
+    <div style="font-size:0.82rem;color:#6c757d;">
+      Generado con los datos del programa seleccionado ·
+      <span id="reportProgFecha" class="fw-bold text-primary"></span>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-primary" onclick="updateReportProg()">↺ Actualizar informe</button>
+      <button class="btn btn-sm btn-outline-dark" onclick="window.print()">🖨 Imprimir / PDF</button>
+    </div>
+  </div>
+
+  <!-- Selector campus + programa -->
+  <ul class="nav nav-tabs campus-tabs mb-3" id="progTabsInforme">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="switchProgCampusInforme('vll',this); return false;">📍 Valledupar</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="switchProgCampusInforme('cuc',this); return false;">📍 Cúcuta</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="switchProgCampusInforme('buc',this); return false;">📍 Bucaramanga</a></li>
+  </ul>
+  <div class="row g-2 mb-3">
+    <div class="col-md-6">
+      <label class="form-label mb-1 fw-bold" style="font-size:0.85rem;">Seleccione programa / departamento:</label>
+      <select class="form-select form-select-sm" id="progSelectorInforme" onchange="updateReportProg()"></select>
+    </div>
+    <div class="col-md-6 d-flex align-items-end">
+      <span class="text-muted" style="font-size:0.78rem;" id="progInformeCampusLabel"></span>
+    </div>
+  </div>
+
+  <!-- Contenido del informe -->
+  <div id="reportProgContent">
+    <div class="text-muted text-center py-4">Seleccione un campus y un programa para generar el informe.</div>
+  </div>
+</div><!-- fin sec-informe-prog -->
+
 
 </div><!-- container -->
 
@@ -2208,6 +2254,221 @@ function rebuildProgChart() {
 }
 
 // ============================================================
+// INFORME POR PROGRAMA (TAB 6)
+// ============================================================
+let currentProgCampusInforme = 'vll';
+
+function switchProgCampusInforme(campus, el) {
+  currentProgCampusInforme = campus;
+  const tabs = el.closest('ul').querySelectorAll('.nav-link');
+  tabs.forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  populateProgSelectorInforme(campus);
+  updateReportProg();
+}
+
+function populateProgSelectorInforme(campus) {
+  const sel = document.getElementById('progSelectorInforme');
+  if (!sel) return;
+  sel.innerHTML = '';
+  const progs = Object.keys(PROG_DATA[campus]).sort();
+  progs.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    sel.appendChild(opt);
+  });
+  const names = { vll:'Valledupar', cuc:'Cúcuta', buc:'Bucaramanga' };
+  const lbl = document.getElementById('progInformeCampusLabel');
+  if (lbl) lbl.textContent = 'Campus ' + names[campus] + ' · ' + progs.length + ' programas/departamentos';
+}
+
+function updateReportProg() {
+  const campus = currentProgCampusInforme;
+  const sel    = document.getElementById('progSelectorInforme');
+  const prog   = sel ? sel.value : '';
+  if (!prog || !PROG_DATA[campus] || !PROG_DATA[campus][prog]) return;
+
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' }) +
+                ' · ' + now.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+  const fechaEl = document.getElementById('reportProgFecha');
+  if (fechaEl) fechaEl.textContent = fecha;
+
+  const content = document.getElementById('reportProgContent');
+  if (content) content.innerHTML = buildProgramReport(campus, prog);
+}
+
+function buildProgramReport(campus, prog) {
+  const tipos  = PROG_DATA[campus][prog];
+  const nueva  = mapToNuevaTipologia(tipos, campus);
+  const totalCirc  = Object.values(tipos).reduce((s,v) => s+v, 0);
+  const totalNueva = Object.values(nueva).reduce((s,v) => s+v, 0);
+  const meses = 4;
+
+  const tipoLabels = {
+    PTC:'PTC Tiempo Completo', PMT:'PMT Medio Tiempo', PPTC:'PPTC Planta TC',
+    PPMT:'PPMT Planta MT', PTCVE:'PTCVE Vinculación Especial',
+    ComAdm:'Comisión Administrativa', PracMT:'Prácticas Salud MT', PracTC:'Prácticas Salud TC',
+    PC:'Profesor Cátedra', Bienestar:'Bienestar/Inst.', Idiomas:'Idiomas',
+    Informatica:'Informática', ConvDoc:'Convenio Docencia', Otro:'Otros'
+  };
+  const perfilLabels = {
+    lcatedra:'📚 Líder en Enseñanza TC', misional:'🔬 Misional TC',
+    invext:'🧪 Investigador/Extensionista TC', linv:'🏆 Líder en Investigación TC',
+    ladm:'🏛 Líder Administrativo', mt:'⏱ Medio Tiempo',
+    hc:'🎓 Hora Cátedra / Instructores', pracmt:'🏥 Prácticas Clínicas MT',
+    practc:'🏥 Prácticas Clínicas TC', otros:'🏢 Bienestar y Otros'
+  };
+  const perfilClases = {
+    lcatedra:'perfil-lcatedra', misional:'perfil-misional', invext:'perfil-invext',
+    linv:'perfil-linv', ladm:'perfil-ladm', mt:'perfil-mt', hc:'perfil-hc',
+    pracmt:'perfil-prac', practc:'perfil-prac', otros:'perfil-otros'
+  };
+
+  // Costos circulares
+  const circSals = getCircSalarios(campus);
+  let costoCircMes = 0, costoCircPrestMes = 0;
+  Object.entries(tipos).forEach(([k,n]) => {
+    const s = circSals[k] || { salary:2500000, prest:50 };
+    costoCircMes      += n * s.salary;
+    costoCircPrestMes += n * s.salary * (1 + s.prest/100);
+  });
+  const costoCircSem = costoCircPrestMes * meses;
+
+  // Costos nueva tipología (usa PROG_SIM_STATE si el campus+prog coincide, si no mapeo base)
+  const nuevaSals = {};
+  DATA[campus].perfiles.forEach(p => { nuevaSals[p.id] = { salary:p.salary, prest:p.prest }; });
+
+  let costoNuevaMes = 0, costoNuevaPrestMes = 0;
+  Object.entries(nueva).forEach(([k,n]) => {
+    if (n <= 0) return;
+    const s = nuevaSals[k] || { salary:3000000, prest:52 };
+    costoNuevaMes      += n * s.salary;
+    costoNuevaPrestMes += n * s.salary * (1 + s.prest/100);
+  });
+  const costoNuevaSem = costoNuevaPrestMes * meses;
+
+  const deltaM   = costoNuevaMes - costoCircMes;
+  const deltaSem = costoNuevaSem - costoCircSem;
+  const deltaPct = costoCircMes > 0 ? ((deltaM/costoCircMes)*100).toFixed(1) : 0;
+  const esAhorro = deltaM < 0;
+  const signM = deltaM  >= 0 ? '+' : '';
+  const signS = deltaSem >= 0 ? '+' : '';
+  const deltaKpiCls = esAhorro ? 'ahorro' : 'aumento';
+  const deltaLabel  = esAhorro ? '↓ Ahorro estimado' : '↑ Aumento estimado';
+
+  // Filas circular
+  const filasCirc = Object.entries(tipos).filter(([,v])=>v>0).map(([k,v]) => {
+    const s = circSals[k] || { salary:2500000, prest:50 };
+    const cost = v * s.salary;
+    const costSem = cost * (1+s.prest/100) * meses;
+    return `<tr>
+      <td>${tipoLabels[k]||k}</td>
+      <td class="text-center fw-bold">${v}</td>
+      <td class="text-end">${cop(s.salary)}</td>
+      <td class="text-center">${s.prest}%</td>
+      <td class="text-end fw-bold">${cop(cost)}</td>
+      <td class="text-end">${cop(costSem)}</td>
+    </tr>`;
+  }).join('');
+
+  // Filas nueva tipología
+  const filasNueva = Object.entries(nueva).filter(([,v])=>v>0).map(([k,v]) => {
+    const s = nuevaSals[k] || { salary:3000000, prest:52 };
+    const cost = v * s.salary;
+    const costSem = cost * (1+s.prest/100) * meses;
+    return `<tr>
+      <td><span class="perfil-badge ${perfilClases[k]||''}" style="font-size:0.75rem;">${perfilLabels[k]||k}</span></td>
+      <td class="text-center fw-bold">${v}</td>
+      <td class="text-end">${cop(s.salary)}</td>
+      <td class="text-center">${s.prest}%</td>
+      <td class="text-end fw-bold">${cop(cost)}</td>
+      <td class="text-end">${cop(costSem)}</td>
+    </tr>`;
+  }).join('');
+
+  const sharedHead = `<thead class="report-detail-table">
+    <tr>
+      <th style="width:32%">Tipo / Perfil</th>
+      <th class="text-center" style="width:7%">N°</th>
+      <th class="text-end" style="width:15%">Sal./mes</th>
+      <th class="text-center" style="width:7%">Prest.</th>
+      <th class="text-end" style="width:18%">Costo mensual</th>
+      <th class="text-end" style="width:18%">Costo sem. c/prest.</th>
+    </tr>
+  </thead>`;
+
+  return `
+  <div class="report-campus-card">
+    <div class="report-campus-header">
+      📋 Programa: ${prog}
+      <small style="opacity:0.75;font-weight:400;margin-left:8px;">${{ vll:'Campus Valledupar', cuc:'Campus Cúcuta', buc:'Campus Bucaramanga' }[campus]} · ${meses} meses/sem</small>
+    </div>
+    <div class="p-3">
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="report-kpi-circ">
+            <div class="report-kpi-title">📋 Circular anterior</div>
+            <div class="report-kpi-value">${copM(costoCircMes)}<small style="font-size:0.6em;">/mes</small></div>
+            <div class="report-kpi-sub">Sem. c/prest.: <strong>${copM(costoCircSem)}</strong></div>
+            <div class="report-kpi-sub">N° profesores: <strong>${totalCirc}</strong></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="report-kpi-nueva">
+            <div class="report-kpi-title">🆕 Nueva tipología 2026</div>
+            <div class="report-kpi-value">${copM(costoNuevaMes)}<small style="font-size:0.6em;">/mes</small></div>
+            <div class="report-kpi-sub">Sem. c/prest.: <strong>${copM(costoNuevaSem)}</strong></div>
+            <div class="report-kpi-sub">N° perfiles: <strong>${totalNueva}</strong></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="report-kpi-delta ${deltaKpiCls}">
+            <div class="report-kpi-title">⚖️ ${deltaLabel}</div>
+            <div class="report-kpi-value ${esAhorro?'variacion-neg':'variacion-pos'}" style="font-size:1.1rem;">
+              ${signM}${copM(deltaM)}<small style="font-size:0.6em;">/mes</small>
+            </div>
+            <div class="report-kpi-sub">Δ %: <strong>${signM}${deltaPct}%</strong> vs. circular</div>
+            <div class="report-kpi-sub">Δ sem. c/prest.: <strong>${signS}${copM(deltaSem)}</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div style="font-size:0.8rem;font-weight:700;color:#856404;margin-bottom:4px;">📋 Detalle Circular Anterior</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered report-detail-table mb-0">
+              ${sharedHead}
+              <tbody>${filasCirc}</tbody>
+              <tfoot><tr style="background:#fff8e1;font-weight:700;">
+                <td>TOTAL</td><td class="text-center">${totalCirc}</td><td></td><td></td>
+                <td class="text-end">${cop(costoCircMes)}</td>
+                <td class="text-end">${cop(costoCircSem)}</td>
+              </tr></tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:4px;">🆕 Detalle Nueva Tipología 2026</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered report-detail-table mb-0">
+              ${sharedHead}
+              <tbody>${filasNueva}</tbody>
+              <tfoot><tr style="background:#e8f4fd;font-weight:700;">
+                <td>TOTAL</td><td class="text-center">${totalNueva}</td><td></td><td></td>
+                <td class="text-end">${cop(costoNuevaMes)}</td>
+                <td class="text-end">${cop(costoNuevaSem)}</td>
+              </tr></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="footnote mt-2">* Distribución de PTC/PPTC usa proporciones del campus completo. Salarios: promedios reales 2026A.</div>
+    </div>
+  </div>`;
+}
+
+// ============================================================
 // INICIALIZACIÓN
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -2224,9 +2485,11 @@ document.addEventListener('DOMContentLoaded', function() {
     buildCircular(c);
     buildSimulator(c);
   });
-  // Inicializar vista por programa
+  // Inicializar vista por programa (Tab 5)
   populateProgSelector('vll');
   renderPrograma();
+  // Inicializar informe por programa (Tab 6)
+  populateProgSelectorInforme('vll');
 });
 </script>
 </body>
