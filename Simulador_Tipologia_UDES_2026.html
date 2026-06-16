@@ -1926,16 +1926,18 @@ function getCircSalarios(campus) {
   return map;
 }
 
+// Estado del simulador por programa
+let PROG_SIM_STATE = [];
+let progCircBase = {};
+
 function renderPrograma() {
   const campus = currentProgCampus;
   const prog = document.getElementById('progSelector').value;
   if (!prog || !PROG_DATA[campus][prog]) return;
 
   const tipos = PROG_DATA[campus][prog];
-  const nueva = mapToNuevaTipologia(tipos, campus);
-
-  const totalCirc  = Object.values(tipos).reduce((s,v) => s+v, 0);
-  const totalNueva = Object.values(nueva).reduce((s,v) => s+v, 0);
+  const nuevaBase = mapToNuevaTipologia(tipos, campus);
+  const totalCirc = Object.values(tipos).reduce((s,v) => s+v, 0);
 
   const tipoLabels = {
     PTC:'PTC Tiempo Completo', PMT:'PMT Medio Tiempo', PPTC:'PPTC Planta TC',
@@ -1957,183 +1959,248 @@ function renderPrograma() {
     pracmt:'perfil-prac', practc:'perfil-prac', otros:'perfil-otros'
   };
 
-  // ── Cálculo financiero ──────────────────────────────────────────
+  // Salarios circulares
   const circSals = getCircSalarios(campus);
-  const nuevaSals = {};
-  DATA[campus].perfiles.forEach(p => { nuevaSals[p.id] = { salary: p.salary, prest: p.prest }; });
-
   let costoCircMes = 0, costoCircPrestMes = 0;
   Object.entries(tipos).forEach(([k,n]) => {
     const s = circSals[k] || { salary: 2500000, prest: 50 };
-    costoCircMes     += n * s.salary;
+    costoCircMes      += n * s.salary;
     costoCircPrestMes += n * s.salary * (1 + s.prest / 100);
   });
-  const costoCircSem = costoCircPrestMes * 4;
 
-  let costoNuevaMes = 0, costoNuevaPrestMes = 0;
-  Object.entries(nueva).forEach(([k,n]) => {
-    if (n <= 0) return;
+  // Salarios nueva tipología
+  const nuevaSals = {};
+  DATA[campus].perfiles.forEach(p => { nuevaSals[p.id] = { salary: p.salary, prest: p.prest }; });
+
+  // Guardar base circular para recalcPrograma
+  progCircBase = { tipos, costoMes: costoCircMes, costoPrestMes: costoCircPrestMes, totalN: totalCirc, tipoLabels };
+
+  // Inicializar estado del simulador
+  PROG_SIM_STATE = Object.entries(nuevaBase).map(([k, n]) => {
     const s = nuevaSals[k] || { salary: 3000000, prest: 52 };
-    costoNuevaMes     += n * s.salary;
-    costoNuevaPrestMes += n * s.salary * (1 + s.prest / 100);
+    return { id: k, label: perfilLabels[k]||k, clase: perfilClases[k]||'',
+             count: n, baseCount: n, salary: s.salary, baseSalary: s.salary,
+             prest: s.prest, basePrest: s.prest };
   });
-  const costoNuevaSem = costoNuevaPrestMes * 4;
 
-  const deltaM   = costoNuevaMes - costoCircMes;
-  const deltaSem = costoNuevaSem - costoCircSem;
-  const deltaPct = costoCircMes > 0 ? ((deltaM / costoCircMes) * 100).toFixed(1) : 0;
-  const esAhorro = deltaM < 0;
-  const signM  = deltaM  >= 0 ? '+' : '';
-  const signS  = deltaSem >= 0 ? '+' : '';
-  const deltaKpiCls = esAhorro ? 'ahorro' : 'aumento';
-  const deltaLabel  = esAhorro ? '↓ Ahorro estimado' : '↑ Aumento estimado';
-
-  // ── Insights ejecutivos ─────────────────────────────────────────
-  const insights = [];
-  const maxEntry = Object.entries(tipos).sort(([,a],[,b]) => b-a)[0];
-  if (maxEntry) {
-    insights.push('Tipo <strong>predominante</strong> en circular: ' + (tipoLabels[maxEntry[0]]||maxEntry[0]) +
-      ' — ' + maxEntry[1] + ' profes. (' + (maxEntry[1]/totalCirc*100).toFixed(1) + '% de la planta del programa)');
-  }
-  insights.push((esAhorro ? '🟢' : '🔴') + ' Δ costo mensual estimado: <strong>' + signM + copM(deltaM) +
-    '</strong> (' + signM + deltaPct + '%) — ' + (esAhorro ? '<span class="text-success fw-bold">ahorro</span>' : '<span class="text-danger fw-bold">aumento</span>') + ' vs. circular anterior');
-
-  if ((nueva.linv || 0) === 0) {
-    insights.push('⚠️ Sin perfil <strong>Líder en Investigación</strong> proyectado — oportunidad para fortalecer I+D en el programa');
-  }
-  const pctPracTC = totalCirc > 0 ? (tipos.PracTC||0) / totalCirc : 0;
-  if (pctPracTC > 0.20) {
-    insights.push('⚠️ Alta proporción Prácticas Clínicas TC (<strong>' + (pctPracTC*100).toFixed(1) + '%</strong>) — revisar sostenibilidad financiera del componente clínico');
-  }
-  if (Math.abs(Number(deltaPct)) < 2) {
-    insights.push('ℹ️ Impacto financiero prácticamente neutro — la transición de tipología no genera variación significativa de costo en este programa');
-  }
-  const insightHtml = insights.map(i => '<li style="font-size:0.82rem;margin-bottom:5px;">' + i + '</li>').join('');
-
-  // ── Filas tablas ────────────────────────────────────────────────
+  // Tabla circular (solo lectura)
   const filasCirc = Object.entries(tipos).filter(([,v]) => v > 0).map(([k,v]) => {
     const s = circSals[k] || { salary: 2500000, prest: 50 };
     return '<tr><td style="font-size:0.82rem;font-weight:600;">' + (tipoLabels[k]||k) + '</td>' +
       '<td class="text-center fw-bold">' + v + '</td>' +
-      '<td class="text-center text-muted" style="font-size:0.78rem;">' + ((v/totalCirc*100).toFixed(1)) + '%</td>' +
-      '<td class="text-end" style="font-size:0.78rem;">' + cop(v * s.salary) + '</td></tr>';
-  }).join('');
-
-  const filasNueva = Object.entries(nueva).filter(([,v]) => v > 0).map(([k,v]) => {
-    const s = nuevaSals[k] || { salary: 3000000, prest: 52 };
-    return '<tr><td><span class="perfil-badge ' + (perfilClases[k]||'') + '" style="font-size:0.75rem;">' +
-      (perfilLabels[k]||k) + '</span></td>' +
-      '<td class="text-center fw-bold">' + v + '</td>' +
-      '<td class="text-center text-muted" style="font-size:0.78rem;">' + ((v/totalNueva*100).toFixed(1)) + '%</td>' +
       '<td class="text-end" style="font-size:0.78rem;">' + cop(v * s.salary) + '</td></tr>';
   }).join('');
 
   const html = `
-  <!-- KPI cards financieras -->
+  <!-- KPI cards dinámicas -->
   <div class="row g-3 mb-3">
     <div class="col-md-4">
       <div class="report-kpi-circ">
         <div class="report-kpi-title">📋 Circular anterior</div>
-        <div class="report-kpi-value">${copM(costoCircMes)}<small style="font-size:0.6em;">/mes</small></div>
-        <div class="report-kpi-sub">Sem. c/prest. (4 meses): <strong>${copM(costoCircSem)}</strong></div>
+        <div class="report-kpi-value" id="progKpiCircMes"></div>
+        <div class="report-kpi-sub">Sem. c/prest. (4 meses): <strong id="progKpiCircSem"></strong></div>
         <div class="report-kpi-sub">N° profesores: <strong>${totalCirc}</strong></div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="report-kpi-nueva">
         <div class="report-kpi-title">🆕 Nueva tipología 2026</div>
-        <div class="report-kpi-value">${copM(costoNuevaMes)}<small style="font-size:0.6em;">/mes</small></div>
-        <div class="report-kpi-sub">Sem. c/prest. (4 meses): <strong>${copM(costoNuevaSem)}</strong></div>
-        <div class="report-kpi-sub">N° perfiles: <strong>${totalNueva}</strong></div>
+        <div class="report-kpi-value" id="progKpiNuevaMes"></div>
+        <div class="report-kpi-sub">Sem. c/prest. (4 meses): <strong id="progKpiNuevaSem"></strong></div>
+        <div class="report-kpi-sub">N° perfiles: <strong id="progKpiNuevaN"></strong></div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="report-kpi-delta ${deltaKpiCls}">
-        <div class="report-kpi-title">⚖️ ${deltaLabel}</div>
-        <div class="report-kpi-value ${esAhorro ? 'variacion-neg' : 'variacion-pos'}" style="font-size:1.2rem;">
-          ${signM}${copM(deltaM)}<small style="font-size:0.6em;">/mes</small>
-        </div>
-        <div class="report-kpi-sub">Δ %: <strong>${signM}${deltaPct}%</strong> vs. circular</div>
-        <div class="report-kpi-sub">Δ sem. c/prest.: <strong>${signS}${copM(deltaSem)}</strong></div>
+      <div class="report-kpi-delta" id="progKpiDeltaCard">
+        <div class="report-kpi-title" id="progKpiDeltaLabel">⚖️</div>
+        <div class="report-kpi-value" id="progKpiDeltaM" style="font-size:1.2rem;"></div>
+        <div class="report-kpi-sub">Δ %: <strong id="progKpiDeltaPct"></strong> vs. circular</div>
+        <div class="report-kpi-sub">Δ sem. c/prest.: <strong id="progKpiDeltaSem"></strong></div>
       </div>
     </div>
   </div>
 
-  <!-- Insights ejecutivos -->
-  <div class="hallazgo-item mb-3">
-    <div class="hi-title mb-1">Insights ejecutivos — ${prog}</div>
-    <ul class="mb-0 ps-3">${insightHtml}</ul>
-  </div>
-
-  <!-- Tablas + gráfica -->
+  <!-- Circular + Simulador + Gráfica -->
   <div class="row g-3">
-    <div class="col-lg-5">
-      <div class="row g-2">
-        <div class="col-6">
-          <div style="font-size:0.8rem;font-weight:700;color:#856404;margin-bottom:4px;">📋 Circular vigente</div>
-          <table class="table table-sm table-bordered" style="font-size:0.8rem;">
-            <thead><tr><th>Tipo</th><th class="text-center">N°</th><th class="text-center">%</th><th class="text-end">$/mes</th></tr></thead>
-            <tbody>${filasCirc}</tbody>
-            <tfoot><tr style="background:#fff8e1;font-weight:700;"><td>Total</td><td class="text-center">${totalCirc}</td><td></td><td class="text-end">${cop(costoCircMes)}</td></tr></tfoot>
-          </table>
-        </div>
-        <div class="col-6">
-          <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:4px;">🆕 Nueva tipología</div>
-          <table class="table table-sm table-bordered" style="font-size:0.8rem;">
-            <thead><tr><th>Perfil</th><th class="text-center">N°</th><th class="text-center">%</th><th class="text-end">$/mes</th></tr></thead>
-            <tbody>${filasNueva}</tbody>
-            <tfoot><tr style="background:#e8f4fd;font-weight:700;"><td>Total</td><td class="text-center">${totalNueva}</td><td></td><td class="text-end">${cop(costoNuevaMes)}</td></tr></tfoot>
-          </table>
-        </div>
-      </div>
+    <div class="col-lg-3">
+      <div style="font-size:0.8rem;font-weight:700;color:#856404;margin-bottom:4px;">📋 Circular vigente</div>
+      <table class="table table-sm table-bordered" style="font-size:0.8rem;">
+        <thead><tr><th>Tipo contrato</th><th class="text-center">N°</th><th class="text-end">$/mes</th></tr></thead>
+        <tbody>${filasCirc}</tbody>
+        <tfoot><tr style="background:#fff8e1;font-weight:700;"><td>Total</td><td class="text-center">${totalCirc}</td><td class="text-end">${cop(costoCircMes)}</td></tr></tfoot>
+      </table>
     </div>
-    <div class="col-lg-7">
-      <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:8px;">Comparativo visual: Circular vs. Nueva Tipología</div>
-      <div style="position:relative;height:290px;"><canvas id="chartPrograma"></canvas></div>
-      <div class="footnote mt-2">* Distribución de PTC/PPTC usa proporciones del campus. Salarios: promedios reales 2026A. Prestacional TC=52%, MT=46%.</div>
+    <div class="col-lg-5">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);">🆕 Simulador — Nueva Tipología</div>
+        <button class="btn btn-sm btn-reset" onclick="resetProgSimulator()">↺ Restablecer</button>
+      </div>
+      <table class="table table-sm table-bordered simulator-table" id="progSimTable">
+        <thead>
+          <tr>
+            <th style="width:28%">Perfil funcional</th>
+            <th style="width:8%" class="text-center">Base</th>
+            <th style="width:20%">Cantidad</th>
+            <th style="width:7%" class="text-center">N°</th>
+            <th style="width:14%">Sal. $/mes</th>
+            <th style="width:7%" class="text-center">Prest.%</th>
+            <th style="width:10%" class="text-center">$/mes</th>
+            <th style="width:6%" class="text-center">Δ</th>
+          </tr>
+        </thead>
+        <tbody id="progSimBody"></tbody>
+        <tfoot id="progSimFoot"></tfoot>
+      </table>
+    </div>
+    <div class="col-lg-4">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--udes-blue);margin-bottom:6px;">Comparativo visual</div>
+      <div style="position:relative;height:280px;"><canvas id="chartPrograma"></canvas></div>
+      <div class="footnote mt-1">* PTC/PPTC se distribuyen según proporciones del campus. Ajuste libremente para simular escenarios.</div>
     </div>
   </div>`;
 
   document.getElementById('progContent').innerHTML = html;
+  buildProgSimTable();
+  recalcPrograma();
+}
 
-  // Construir gráfica
+function buildProgSimTable() {
+  const tbody = document.getElementById('progSimBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  PROG_SIM_STATE.forEach((p, idx) => {
+    const maxVal = Math.max(50, (p.baseCount || 0) * 4 || 20);
+    const row = document.createElement('tr');
+    row.innerHTML =
+      '<td><span class="perfil-badge ' + p.clase + '" style="font-size:0.7rem;">' + p.label + '</span></td>' +
+      '<td class="text-center text-secondary fw-bold" style="font-size:0.8rem;">' + p.baseCount + '</td>' +
+      '<td><input type="range" min="0" max="' + maxVal + '" value="' + p.count + '" id="psl_' + idx + '" ' +
+        'oninput="syncProgInput(' + idx + ',this.value)" style="width:100%;accent-color:var(--udes-blue);"></td>' +
+      '<td class="text-center"><input type="number" class="form-control form-control-sm p-1" min="0" ' +
+        'value="' + p.count + '" id="pni_' + idx + '" onchange="syncProgSlider(' + idx + ',this.value)" style="width:50px;font-size:0.78rem;"></td>' +
+      '<td><input type="number" class="form-control form-control-sm p-1" min="0" step="10000" ' +
+        'value="' + p.salary + '" id="psal_' + idx + '" onchange="updateProgSalary(' + idx + ',this.value)" style="font-size:0.78rem;"></td>' +
+      '<td class="text-center"><input type="number" class="form-control form-control-sm p-1" min="0" max="100" ' +
+        'value="' + p.prest + '" id="ppr_' + idx + '" onchange="updateProgPrest(' + idx + ',this.value)" style="width:48px;font-size:0.78rem;"></td>' +
+      '<td class="text-center fw-bold" id="pcost_' + idx + '" style="font-size:0.76rem;">' + cop(p.count * p.salary) + '</td>' +
+      '<td class="text-center" id="pvar_' + idx + '" style="font-size:0.72rem;"></td>';
+    tbody.appendChild(row);
+  });
+}
+
+function recalcPrograma() {
+  let costoNuevaMes = 0, costoNuevaPrestMes = 0, totalNueva = 0;
+  const costoCircUnit = progCircBase.totalN > 0 ? progCircBase.costoMes / progCircBase.totalN : 0;
+
+  PROG_SIM_STATE.forEach((p, idx) => {
+    const cost = p.count * p.salary;
+    const costPrest = cost * (1 + p.prest / 100);
+    costoNuevaMes      += cost;
+    costoNuevaPrestMes += costPrest;
+    totalNueva         += p.count;
+    const el = document.getElementById('pcost_' + idx);
+    if (el) el.textContent = cop(cost);
+    const varEl = document.getElementById('pvar_' + idx);
+    if (varEl) varEl.innerHTML = variacionCell(cost, p.baseCount * p.baseSalary);
+  });
+
+  const costoNuevaSem = costoNuevaPrestMes * 4;
+  const costoCircSem  = progCircBase.costoPrestMes * 4;
+
+  // Footer tabla
+  const tfoot = document.getElementById('progSimFoot');
+  if (tfoot) {
+    tfoot.innerHTML = '<tr class="table-dark">' +
+      '<td colspan="3"><strong>TOTAL PROGRAMA</strong></td>' +
+      '<td class="text-center fw-bold">' + totalNueva + '</td>' +
+      '<td></td><td></td>' +
+      '<td class="text-center fw-bold" style="font-size:0.76rem;">' + cop(costoNuevaMes) + '</td>' +
+      '<td class="text-center" style="font-size:0.72rem;">' + variacionCell(costoNuevaMes, progCircBase.costoMes) + '</td></tr>';
+  }
+
+  // KPI cards
+  const deltaM   = costoNuevaMes - progCircBase.costoMes;
+  const deltaSem = costoNuevaSem - costoCircSem;
+  const pct = progCircBase.costoMes > 0 ? ((deltaM / progCircBase.costoMes) * 100).toFixed(1) : 0;
+  const esAhorro = deltaM < 0;
+  const signM = deltaM  >= 0 ? '+' : '';
+  const signS = deltaSem >= 0 ? '+' : '';
+
+  const setEl = (id, html) => { const e = document.getElementById(id); if (e) e.innerHTML = html; };
+  setEl('progKpiCircMes',  copM(progCircBase.costoMes) + '<small style="font-size:0.55em;">/mes</small>');
+  setEl('progKpiCircSem',  copM(costoCircSem));
+  setEl('progKpiNuevaMes', copM(costoNuevaMes) + '<small style="font-size:0.55em;">/mes</small>');
+  setEl('progKpiNuevaSem', copM(costoNuevaSem));
+  setEl('progKpiNuevaN',   String(totalNueva));
+  setEl('progKpiDeltaLabel', '⚖️ ' + (esAhorro ? '↓ Ahorro estimado' : '↑ Aumento estimado'));
+  const dEl = document.getElementById('progKpiDeltaM');
+  if (dEl) { dEl.className = 'report-kpi-value ' + (esAhorro ? 'variacion-neg' : 'variacion-pos');
+             dEl.innerHTML = signM + copM(deltaM) + '<small style="font-size:0.55em;">/mes</small>'; }
+  setEl('progKpiDeltaPct', signM + pct + '%');
+  setEl('progKpiDeltaSem', signS + copM(deltaSem));
+  const card = document.getElementById('progKpiDeltaCard');
+  if (card) card.className = 'report-kpi-delta ' + (esAhorro ? 'ahorro' : 'aumento');
+
+  rebuildProgChart();
+}
+
+function syncProgInput(idx, val) {
+  const n = parseInt(val) || 0;
+  PROG_SIM_STATE[idx].count = n;
+  const ni = document.getElementById('pni_' + idx);
+  if (ni) ni.value = n;
+  recalcPrograma();
+}
+function syncProgSlider(idx, val) {
+  const n = parseInt(val) || 0;
+  PROG_SIM_STATE[idx].count = n;
+  const sl = document.getElementById('psl_' + idx);
+  if (sl) sl.value = n;
+  recalcPrograma();
+}
+function updateProgSalary(idx, val) { PROG_SIM_STATE[idx].salary = parseFloat(val)||0; recalcPrograma(); }
+function updateProgPrest(idx, val)  { PROG_SIM_STATE[idx].prest  = parseFloat(val)||0; recalcPrograma(); }
+function resetProgSimulator() {
+  PROG_SIM_STATE.forEach((p, idx) => {
+    p.count = p.baseCount; p.salary = p.baseSalary; p.prest = p.basePrest;
+    const sl  = document.getElementById('psl_'  + idx);
+    const ni  = document.getElementById('pni_'  + idx);
+    const sal = document.getElementById('psal_' + idx);
+    const pr  = document.getElementById('ppr_'  + idx);
+    if (sl) sl.value = p.count; if (ni) ni.value = p.count;
+    if (sal) sal.value = p.salary; if (pr) pr.value = p.prest;
+  });
+  recalcPrograma();
+}
+
+function rebuildProgChart() {
   const ctx = document.getElementById('chartPrograma');
   if (!ctx) return;
   if (progChart) { progChart.destroy(); progChart = null; }
-
-  const labelsCirc = Object.entries(tipos).filter(([,v])=>v>0).map(([k]) => tipoLabels[k]||k);
-  const dataCirc   = Object.entries(tipos).filter(([,v])=>v>0).map(([,v]) => v);
-  const labelsNueva = Object.entries(nueva).filter(([,v])=>v>0).map(([k]) => (perfilLabels[k]||k).replace(/[📚🔬🧪🏆🏛⏱🎓🏥🏢]/gu,'').trim());
-  const dataNueva   = Object.entries(nueva).filter(([,v])=>v>0).map(([,v]) => v);
-  const coloresCirc = ['#1b3a6b','#2a5298','#c9a227','#f0c040','#6610f2','#dc3545','#fd7e14','#e85d04','#198754','#6c757d','#0dcaf0','#adb5bd','#999'];
-  const coloresNueva = ['#6ea8fe','#75b798','#ffc107','#c29ffa','#f1aeb5','#79dbd2','#adb5bd','#ffb06a','#ff8c40','#cccccc'];
-
+  const tl = progCircBase.tipoLabels || {};
+  const tipos = progCircBase.tipos || {};
+  const pLabels = {
+    lcatedra:'Líder Enseñanza', misional:'Misional', invext:'Inv./Ext.',
+    linv:'L. Investigación', ladm:'L. Administrativo', mt:'Medio Tiempo',
+    hc:'Hora Cátedra', pracmt:'Prácticas MT', practc:'Prácticas TC', otros:'Bienestar/Otros'
+  };
+  const cC = ['#1b3a6b','#2a5298','#c9a227','#f0c040','#6610f2','#dc3545','#fd7e14','#e85d04','#198754','#6c757d','#0dcaf0','#adb5bd','#999'];
+  const cN = ['#6ea8fe','#75b798','#ffc107','#c29ffa','#f1aeb5','#79dbd2','#adb5bd','#ffb06a','#ff8c40','#cccccc'];
+  const lcEntry = Object.entries(tipos).filter(([,v])=>v>0);
+  const filtNueva = PROG_SIM_STATE.filter(p=>p.count>0);
   progChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: ['Circular vigente', 'Nueva tipología'],
       datasets: [
-        ...labelsCirc.map((l, i) => ({
-          label: l,
-          data: [dataCirc[i], null],
-          backgroundColor: coloresCirc[i % coloresCirc.length],
-          stack: 'circular'
-        })),
-        ...labelsNueva.map((l, i) => ({
-          label: l,
-          data: [null, dataNueva[i]],
-          backgroundColor: coloresNueva[i % coloresNueva.length],
-          stack: 'nueva'
-        }))
+        ...lcEntry.map(([k,v],i) => ({ label: tl[k]||k, data:[v,null], backgroundColor: cC[i%cC.length], stack:'circular' })),
+        ...filtNueva.map((p,i)   => ({ label: pLabels[p.id]||p.id, data:[null,p.count], backgroundColor: cN[i%cN.length], stack:'nueva' }))
       ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'N° de profesores' } } },
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, padding: 6 } },
-        tooltip: { mode: 'index' }
-      }
+      responsive:true, maintainAspectRatio:false,
+      scales: { x:{stacked:true}, y:{stacked:true, beginAtZero:true, title:{display:true,text:'N° profesores'}} },
+      plugins: { legend:{position:'bottom',labels:{font:{size:10},boxWidth:12,padding:5}}, tooltip:{mode:'index'} }
     }
   });
 }
