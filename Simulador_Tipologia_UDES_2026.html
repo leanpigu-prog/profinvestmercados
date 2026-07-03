@@ -49,6 +49,28 @@
   .perfil-hc { background: #f0f0f0; color: #333; }
   .perfil-prac { background: #ffe8cc; color: #6b2a00; }
   .perfil-otros { background: #e8e8e8; color: #444; }
+  .tipo-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(27,58,107,0.10); margin-bottom: 4px; height: 100%; display: flex; flex-direction: column; }
+  .tipo-card-header { color: #fff; padding: 10px 16px; font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 8px; }
+  .tipo-card-body { padding: 0; flex: 1; }
+  .tipo-card-body table { margin-bottom: 0; }
+  .tipo-card-body td, .tipo-card-body th { font-size: 0.78rem; padding: 6px 10px; }
+  .tipo-enfasis { font-size: 0.78rem; padding: 10px 16px; border-top: 1px dashed #dee2e6; font-style: italic; }
+  .tipo-enfasis .te-title { font-weight: 700; font-style: normal; display: block; }
+  .tipo-header-1 { background: #b03a2e; }
+  .tipo-header-2 { background: var(--udes-blue-light); }
+  .tipo-header-3 { background: var(--verde-ok); }
+  .tipo-header-4 { background: #6f42c1; }
+  .tipo-header-5 { background: var(--udes-blue); }
+  .tipo-enfasis-1 .te-title { color: #b03a2e; }
+  .tipo-enfasis-2 .te-title { color: var(--udes-blue-light); }
+  .tipo-enfasis-3 .te-title { color: var(--verde-ok); }
+  .tipo-enfasis-4 .te-title { color: #6f42c1; }
+  .tipo-enfasis-5 .te-title { color: var(--udes-blue); }
+  .coord-head-ensenanza th { background: var(--udes-blue) !important; }
+  .coord-head-practicas th { background: #0c8599 !important; }
+  .coord-head-extension th { background: var(--udes-blue-light) !important; }
+  .coord-head-investigacion th { background: var(--verde-ok) !important; }
+  .coord-head-autorregulacion th { background: #0a9396 !important; }
   .simulator-table th { background: var(--udes-blue); color: #fff; font-size: 0.78rem; vertical-align: middle; text-align: center; }
   .simulator-table td { vertical-align: middle; }
   .simulator-table input[type=range] { width: 100%; accent-color: var(--udes-blue); }
@@ -344,7 +366,7 @@
      SECCIÓN 2: TRANSICIÓN
      ===================================================================== -->
 <div id="sec-transicion" class="section-content">
-  <div class="section-title">Transición: Aplicación de Nueva Tipología Funcional (Aprobada por Consejo Académico — 05 Junio 2026)</div>
+  <div class="section-title">Transición: Aplicación de Nueva Tipología Funcional (Acuerdo 012 del Consejo Académico — 05 Junio 2026)</div>
 
   <!-- Tabla de mapeo -->
   <h6 class="fw-bold text-primary mb-2">Reglas de clasificación: Tipología vigente → Nuevos perfiles funcionales</h6>
@@ -407,6 +429,100 @@
     </tbody>
   </table>
 
+  <!-- Detalle de asignación de tiempo por perfil (según afiche oficial - Acuerdo 012) -->
+  <h6 class="fw-bold text-primary mb-2 mt-4">Detalle de asignación de tiempo por perfil (Tiempo Completo / Medio Tiempo)</h6>
+  <div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+      <div class="tipo-card">
+        <div class="tipo-card-header tipo-header-1">📚 1. Profesor Líder en Enseñanza</div>
+        <div class="tipo-card-body">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Tipo de asignación</th><th>TC</th><th>MT</th></tr></thead>
+            <tbody>
+              <tr><td>Enseñanza directa (aula/lab/clínica/otros ambientes)</td><td>55–63%<br>Mín 22h / Máx 25h</td><td>50–70%<br>Mín 10h / Máx 14h</td></tr>
+              <tr><td>Preparación de clase (derivada de la enseñanza directa)</td><td>Hasta 35%<br>Hasta 9h</td><td>Hasta 35%<br>4 – 5h</td></tr>
+              <tr><td>Gestión académica (activ. adm./académicas)</td><td>10–20%<br>Mín 4h / Máx 8h</td><td>10%<br>2h</td></tr>
+              <tr><td>Capacitación y formación profesoral</td><td>2.5%<br>1h</td><td>5%<br>1h</td></tr>
+              <tr><td>Comité de programa</td><td>2.5%<br>1h</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tipo-enfasis tipo-enfasis-1"><span class="te-title">☆ Énfasis: Enseñanza</span>Enfoque en la excelencia profesoral y máximo impacto en el aula.</div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="tipo-card">
+        <div class="tipo-card-header tipo-header-2">🔬 2. Profesor Misional</div>
+        <div class="tipo-card-body">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Tipo de asignación</th><th>TC</th><th>MT</th></tr></thead>
+            <tbody>
+              <tr><td>Enseñanza directa (aula/lab/clínica)</td><td>45–50%<br>Mín 18h / Máx 20h</td><td>60%<br>12h</td></tr>
+              <tr><td>Preparación de clase (derivada de la enseñanza directa)</td><td>Hasta 35%<br>Hasta 7h</td><td>Hasta 35%<br>3h</td></tr>
+              <tr><td>Investigación y/o extensión / activ. misionales / posibilidades transversales</td><td>Mín 15%<br>Mín 6h / Máx 12h</td><td>20%<br>4h</td></tr>
+              <tr><td>Gestión académica (activ. adm. – académicas)</td><td>Hasta 13%<br>Hasta 5h</td><td>—</td></tr>
+              <tr><td>Capacitación y formación profesoral</td><td>2.5%<br>1h</td><td>5%<br>1h</td></tr>
+              <tr><td>Comité de programa</td><td>2.5%<br>1h</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tipo-enfasis tipo-enfasis-2"><span class="te-title">☆ Énfasis: Enseñanza + Misión</span>Equilibrio entre docencia y funciones misionales (investigación, extensión e innovación).</div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="tipo-card">
+        <div class="tipo-card-header tipo-header-3">🧪 3. Investigador / Extensionista</div>
+        <div class="tipo-card-body">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Tipo de asignación</th><th>TC</th></tr></thead>
+            <tbody>
+              <tr><td>Enseñanza directa (preferiblemente posgrado)</td><td>30–40%<br>Mín 12h / Máx 16h</td></tr>
+              <tr><td>Preparación de clase (derivada de la enseñanza directa)</td><td>Hasta 35%<br>Hasta 6h</td></tr>
+              <tr><td>Investigación y/o extensión</td><td>Mín 40%<br>Mín 16h / Máx 24h</td></tr>
+              <tr><td>Capacitación y formación profesoral</td><td>2.5%<br>1h</td></tr>
+              <tr><td>Comité de programa</td><td>2.5%<br>1h</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tipo-enfasis tipo-enfasis-3"><span class="te-title">☆ Énfasis: Ciencia e Investigación 100%</span>Dedicación a la generación de conocimiento e impacto social.</div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="tipo-card">
+        <div class="tipo-card-header tipo-header-4">🏆 4. Profesor Líder en Investigación</div>
+        <div class="tipo-card-body">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Tipo de asignación</th><th>TC</th></tr></thead>
+            <tbody>
+              <tr><td>Enseñanza directa en posgrado prioritariamente, con mínimo 3h en pregrado</td><td>20–25%<br>Mín 8h / Máx 15h</td></tr>
+              <tr><td>Preparación de clase (derivada de la enseñanza directa)</td><td>Hasta 35%<br>Hasta 3h</td></tr>
+              <tr><td>Investigación (convocatoria externa obligatoria; convocatoria interna solo si tiene una convocatoria externa en desarrollo, hasta 6h)</td><td>62%<br>Mín 25h</td></tr>
+              <tr><td>Capacitación y formación profesoral</td><td>5%<br>1h</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tipo-enfasis tipo-enfasis-4"><span class="te-title">☆ Énfasis: Alto impacto</span>Liderazgo en investigación de alto impacto, producción científica y fortalecimiento institucional, direccionado por la vicerrectoría de posgrados.</div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="tipo-card">
+        <div class="tipo-card-header tipo-header-5">🏛 5. Profesor Líder Administrativo</div>
+        <div class="tipo-card-body">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Tipo de asignación</th><th>%</th><th>h/sem</th></tr></thead>
+            <tbody>
+              <tr><td>Enseñanza directa</td><td rowspan="2">15%</td><td rowspan="2">6h</td></tr>
+              <tr><td>Formador de formadores</td></tr>
+              <tr><td>Preparación de clase (estricto — NO aplica regla del 35%)</td><td>5%</td><td>2h</td></tr>
+              <tr><td>Dirección de programa / Coordinación de departamento</td><td>80%</td><td>32h</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tipo-enfasis tipo-enfasis-5"><span class="te-title">☆ Énfasis: Gestión Académica</span>Liderazgo en la gestión académico-administrativa y desarrollo institucional.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Roles de coordinación (aprobados jun 2026) -->
   <h6 class="fw-bold text-primary mb-2 mt-4">Roles de Coordinación — Asignación de horas adicionales</h6>
   <div class="alert alert-info py-2 px-3 mb-3" style="font-size:0.82rem;">
@@ -415,19 +531,19 @@
   <div class="row g-3 mb-4">
     <div class="col-md-6">
       <table class="table table-sm table-bordered mapeo-table">
-        <thead><tr><th colspan="3">🎓 Coordinador/a de Enseñanza</th></tr>
+        <thead class="coord-head-ensenanza"><tr><th colspan="3">🎓 Coordinador/a de Enseñanza</th></tr>
           <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° estudiantes</th></tr></thead>
         <tbody>
-          <tr><td>12 h</td><td>—</td><td>60 – 100 estudiantes</td></tr>
-          <tr><td>15 h</td><td>—</td><td>101 – 200 estudiantes</td></tr>
-          <tr><td>20 h</td><td>—</td><td>201 – 300 estudiantes</td></tr>
-          <tr><td>23 h</td><td>—</td><td>&gt; 300 estudiantes</td></tr>
+          <tr><td rowspan="4">12 – 16 h</td><td>12 h</td><td>80 – 100 estudiantes</td></tr>
+          <tr><td>15 h</td><td>101 – 200 estudiantes</td></tr>
+          <tr><td>20 h</td><td>201 – 300 estudiantes</td></tr>
+          <tr><td>23 h</td><td>&gt; 300 estudiantes</td></tr>
         </tbody>
       </table>
     </div>
     <div class="col-md-6">
       <table class="table table-sm table-bordered mapeo-table">
-        <thead><tr><th colspan="3">🔬 Coordinador/a de Investigación</th></tr>
+        <thead class="coord-head-investigacion"><tr><th colspan="3">🔬 Coordinador/a de Investigación</th></tr>
           <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° estudiantes</th></tr></thead>
         <tbody>
           <tr><td rowspan="3">12 – 16 h</td><td>Hasta 12 h</td><td>Hasta 2</td></tr>
@@ -438,30 +554,30 @@
     </div>
     <div class="col-md-6">
       <table class="table table-sm table-bordered mapeo-table">
-        <thead><tr><th colspan="3">🏥 Coordinador/a de Prácticas</th></tr>
+        <thead class="coord-head-practicas"><tr><th colspan="3">🏥 Coordinador/a de Prácticas</th></tr>
           <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° estudiantes</th></tr></thead>
         <tbody>
-          <tr><td rowspan="3">Variable</td><td>5 h</td><td>Menos de 10</td></tr>
-          <tr><td>10 h</td><td>10 – 30</td></tr>
-          <tr><td>18 h</td><td>Más de 31</td></tr>
+          <tr><td rowspan="3">12 – 21 h</td><td>5 h</td><td>Menos de 10</td></tr>
+          <tr><td>10 h</td><td>Entre 11 – 30</td></tr>
+          <tr><td>18 h</td><td>Entre 31 – 60</td></tr>
         </tbody>
       </table>
     </div>
     <div class="col-md-6">
       <table class="table table-sm table-bordered mapeo-table">
-        <thead><tr><th colspan="3">📋 Coordinador/a de Extensión</th></tr>
+        <thead class="coord-head-extension"><tr><th colspan="3">📋 Coordinador/a de Extensión</th></tr>
           <tr><th>Enseñanza directa</th><th>Horas coordinación</th><th>N° programas</th></tr></thead>
         <tbody>
-          <tr><td rowspan="4">12 – 21 h</td><td>Hasta 4 h</td><td>1 – 3 programas</td></tr>
-          <tr><td>Hasta 6 h</td><td>4 – 6</td></tr>
-          <tr><td>Hasta 10 h</td><td>7 – 15</td></tr>
-          <tr><td>Hasta 15 h</td><td>16 o más</td></tr>
+          <tr><td rowspan="4">12 – 21 h</td><td>Hasta 4 h</td><td>Entre 1 y 3 programas</td></tr>
+          <tr><td>Hasta 6 h</td><td>Entre 4 y 8</td></tr>
+          <tr><td>Hasta 10 h</td><td>Entre 9 y 15</td></tr>
+          <tr><td>Hasta 15 h</td><td>De 16 programas en adelante</td></tr>
         </tbody>
       </table>
     </div>
     <div class="col-md-12">
       <table class="table table-sm table-bordered mapeo-table">
-        <thead><tr><th colspan="4">✅ Coordinador/a de Autorregulación</th></tr>
+        <thead class="coord-head-autorregulacion"><tr><th colspan="4">✅ Coordinador/a de Autorregulación</th></tr>
           <tr><th>Enseñanza directa</th><th>Horas coordinación (Ruta A — Ejecución de planes)</th><th>Horas coordinación (Ruta B — Autoevaluación)</th><th>Máx. total (incl. coordinación)</th></tr></thead>
         <tbody>
           <tr><td>Min 14 h / Máx 18 h</td><td>Hasta 15 h</td><td>Hasta 20 h</td><td><strong>40 h</strong></td></tr>
